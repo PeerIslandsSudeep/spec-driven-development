@@ -1,4 +1,4 @@
-# PeerIslands · Spec-Driven Development Demo Deck
+# MUG Peerislands Mumbai Conference 2026
 
 **A 45-minute live keynote that takes a vague business idea to a running, MongoDB-backed application — using GitHub's spec-kit and Claude Code, with zero code written by the presenter.**
 
@@ -6,7 +6,7 @@ Presented at the **MUG Peerislands Mumbai Conference 2026** by PeerIslands.
 
 ---
 
-## 📖 What this deck is
+## 📖 A Journey
 
 A complete, self-contained demonstration of **Spec-Driven Development (SDD)** — the discipline where a human-reviewable specification is the single source of truth and code is generated *against* it, not the other way around. The deck walks an audience through the entire SDD lifecycle end-to-end:
 
@@ -16,7 +16,7 @@ By the end of the session, a working single-tenant invoice manager for Indian SM
 
 ---
 
-## 🗂 Deck contents
+## 🗂 Contents
 
 | File / Directory | Purpose |
 |------------------|---------|
@@ -100,7 +100,7 @@ cd ..
 
 ---
 
-## 🔑 The 9 SDD commands (run through Coding Agent)
+## 🔑 The 9 SDD Commands (via Coding Agent)
 
 | # | Command | What it does |
 |---|---------|---------------|
@@ -118,7 +118,7 @@ For the full command text (including the verbose `/speckit.plan` prompt that spe
 
 ---
 
-## 🏗 What gets built (The SmartInvoice App)
+## 🏗 What Gets Built (The SmartInvoice App)
 
 ### Three user stories, delivered in priority order
 
@@ -128,13 +128,13 @@ For the full command text (including the verbose `/speckit.plan` prompt that spe
 | **US2 · Dashboard** | P2 | 4 real-time stat cards + 12-month revenue chart + 5 recent invoices — all from one MongoDB `$facet` aggregation pipeline (single round-trip). |
 | **US3 · AI Insights** | P3 | Per-client payment score (0–100) with Low/Medium/High risk bands + 3-month weighted-SMA revenue forecast. Pure MongoDB aggregation pipelines — no external ML API. |
 
-### Tech stack
+### Tech Stack
 
 - **Backend**: Node.js 20 + Express 4 · official `mongodb@6` driver (no Mongoose) · `argon2id` password hashing · `pdfkit` for GST-Rule-46 PDFs · Jest + Supertest + `mongodb-memory-server`
 - **Frontend**: React 18 (Create React App 5) · React Router 6 · Recharts · dark + light theme with top-right toggle persisted to `localStorage`
 - **Database**: MongoDB (Atlas or local). Five collections: `invoices`, `clients`, `counters`, `users`, `sessions` — each with `$jsonSchema` validators and the indexes needed to serve every query without `$lookup`.
 
-### Design principles baked in
+### Design Principles
 
 - **Integer paise everywhere** — monetary amounts stored as 64-bit integers (`₹ × 100`). Zero floating-point rounding. GST is `Math.floor(subtotal × 18 / 100)` to guarantee no overcharge.
 - **MongoDB-first data modeling** — document shapes mirror query patterns; embedding is the default; aggregation pipelines for dashboard and AI insights.
@@ -143,7 +143,7 @@ For the full command text (including the verbose `/speckit.plan` prompt that spe
 
 ---
 
-## 📐 Constitution & traceability
+## 📐 Constitution & Traceability
 
 The entire build is governed by **`smartinvoice/.specify/memory/constitution.md` v1.0.0** — seven principles that the plan, tasks, and implementation all cite. Every functional requirement (FR-000 … FR-015) maps to at least one task, and every task maps back to a requirement. `/speckit.analyze` produces a coverage report that fails the build if any drift is detected.
 
@@ -151,7 +151,7 @@ The clarification sessions in `smartinvoice/specs/001-smartinvoice-core/spec.md`
 
 ---
 
-## 🧯 Fallback & troubleshooting
+## 🧯 Fallback & Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
@@ -164,7 +164,7 @@ The clarification sessions in `smartinvoice/specs/001-smartinvoice-core/spec.md`
 
 ---
 
-## 📚 Further reading
+## 📚 Further Reading
 
 - **Spec-Driven Development** — GitHub spec-kit: <https://github.com/github/spec-kit>
 - **Claude Code** — Anthropic's terminal-native coding agent: <https://claude.com/code>
@@ -172,7 +172,7 @@ The clarification sessions in `smartinvoice/specs/001-smartinvoice-core/spec.md`
 
 ---
 
-## 🎯 Why this demo matters
+## 🎯 Remember : Spec Driven Development
 
 > *"The spec was the contract. Claude Code was the contractor. spec-kit was the process. The validation report is the certificate of compliance. And when a criterion fails, SDD tells us exactly WHERE the drift is. That's Spec-Driven Development."*
 
