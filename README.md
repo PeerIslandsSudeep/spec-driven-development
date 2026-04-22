@@ -20,9 +20,8 @@ By the end of the session, a working single-tenant invoice manager for Indian SM
 
 | File / Directory | Purpose |
 |------------------|---------|
-| `peerislands-speckit-execution-guide.html` | **Executable guide** — open in a browser to see the seven Acts with click-to-copy commands, animated demo-flow diagram, MongoDB document shapes, `$facet` aggregation snippets, and inline narration notes. This is the presenter's teleprompter. |
-| `Peerislands-SDD.pptx` | Keynote slides (backup / printed handout). |
-| `peerislands-speckit-command-reference.pdf` / `.docx` | Printed cheat sheet of the nine `/speckit.*` slash commands. |
+| `index.html` | **Executable guide** — open in a browser to see the seven Acts with click-to-copy commands, animated demo-flow diagram, MongoDB document shapes, `$facet` aggregation snippets, and inline narration notes. This is the presenter's teleprompter. |
+| `peerislands-speckit-command-reference.pdf` | Printed cheat sheet of the nine `/speckit.*` slash commands. |
 | `SetupSpeckit.file` | Minimal pre-flight instructions — install `uv`, `specify-cli`, bootstrap a fresh project. |
 | `preflight.sh` | Pre-demo environment validation (Node 20, npm, MongoDB, Claude Code CLI, ports 3000/4000). |
 | `start-demo.sh` | Boots backend (`:4000`) + frontend (`:3000`) after `/speckit.implement` finishes. |
@@ -32,7 +31,7 @@ By the end of the session, a working single-tenant invoice manager for Indian SM
 
 ---
 
-## 🎬 The seven Acts (what the audience sees)
+## 🎬 The 7 Acts
 
 | # | Act | Time | Deliverable |
 |---|-----|------|-------------|
@@ -46,7 +45,7 @@ By the end of the session, a working single-tenant invoice manager for Indian SM
 
 ---
 
-## 🚀 Running the demo
+## 🚀 Let's Run It
 
 ### Prerequisites
 
@@ -57,7 +56,7 @@ By the end of the session, a working single-tenant invoice manager for Indian SM
 - **spec-kit CLI** (v0.7.0) — `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v0.7.0`
 - **Claude Code CLI** — [claude.com/code](https://claude.com/code)
 
-### Typical demo flow
+### Typical Flow
 
 ```
 ./preflight.sh          →  run the 9 SDD commands inside Claude Code  →  ./start-demo.sh
@@ -78,7 +77,7 @@ specify init smartinvoice --ai claude
 cd smartinvoice
 claude                     # launch Claude Code
 
-# 3. Inside Claude Code, run the nine SDD commands (see execution guide)
+# 3. Inside Claude Code, run the 9 SDD commands (see execution guide)
 #    /speckit.constitution
 #    /speckit.specify  ...
 #    /speckit.clarify
@@ -101,7 +100,7 @@ cd ..
 
 ---
 
-## 🔑 The nine SDD commands (run inside Claude Code)
+## 🔑 The 9 SDD commands (run through Coding Agent)
 
 | # | Command | What it does |
 |---|---------|---------------|
@@ -115,11 +114,11 @@ cd ..
 | 8 | `/speckit.analyze` | Cross-artifact consistency check |
 | 9 | `/speckit.checklist` | Acceptance criteria validation |
 
-For the full command text (including the verbose `/speckit.plan` prompt that specifies the Node 20 + Express 4 + React + MongoDB stack, integer-paise arithmetic, 8 REST endpoints, Jest ≥ 90% coverage gate, and the dark/light theme toggle), open **`peerislands-speckit-execution-guide.html`** in a browser — every command block is click-to-copy.
+For the full command text (including the verbose `/speckit.plan` prompt that specifies the Node 20 + Express 4 + React + MongoDB stack, integer-paise arithmetic, 8 REST endpoints, Jest ≥ 90% coverage gate, and the dark/light theme toggle), open **`index.html`** in a browser — every command block is click-to-copy.
 
 ---
 
-## 🏗 What gets built (the SmartInvoice app)
+## 🏗 What gets built (The SmartInvoice App)
 
 ### Three user stories, delivered in priority order
 
@@ -165,20 +164,11 @@ The clarification sessions in `smartinvoice/specs/001-smartinvoice-core/spec.md`
 
 ---
 
-## 🔒 What NOT to commit
-
-- `smartinvoice/backend/.env` — contains MongoDB credentials (is gitignored; `.env.example` is the committed template).
-- `*.pid` files in `/tmp/` — they're ephemeral.
-- `smartinvoice/node_modules/` and `smartinvoice/backend/coverage/` — both gitignored.
-
----
-
 ## 📚 Further reading
 
 - **Spec-Driven Development** — GitHub spec-kit: <https://github.com/github/spec-kit>
 - **Claude Code** — Anthropic's terminal-native coding agent: <https://claude.com/code>
 - **MongoDB data modeling patterns** — <https://www.mongodb.com/docs/manual/applications/data-models/>
-- **GST Rule 46** — Central Goods and Services Tax Rules, 2017, Rule 46: mandatory fields on a tax invoice.
 
 ---
 
