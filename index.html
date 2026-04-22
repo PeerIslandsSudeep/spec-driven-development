@@ -161,9 +161,11 @@ h1 strong{font-weight:700}
 .cta-link{display:flex;gap:10px;font-size:13px;font-family:'Inter',sans-serif;color:var(--pi-dark);align-items:center}
 .cta-link b{font-weight:700;min-width:92px;color:var(--pi-teal);text-transform:uppercase;letter-spacing:.5px;font-size:11px}
 .cta-link span{font-family:'JetBrains Mono',monospace;color:var(--text)}
-.cta-qr{width:140px;height:140px;background:#fff;border:2px solid var(--pi-dark);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;text-align:center}
+.cta-qrs{display:flex;flex-direction:row;gap:14px;align-items:stretch}
+.cta-qr{width:140px;background:#fff;border:2px solid var(--pi-dark);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;text-align:center}
+.cta-qr img{width:110px;height:110px;display:block;object-fit:contain}
 .cta-qr svg{width:100%;height:86px}
-.cta-qr small{font-size:9.5px;font-family:'Inter',sans-serif;font-weight:700;color:var(--pi-dark);letter-spacing:.5px;margin-top:4px;text-transform:uppercase}
+.cta-qr small{font-size:9.5px;font-family:'Inter',sans-serif;font-weight:700;color:var(--pi-dark);letter-spacing:.5px;margin-top:6px;text-transform:uppercase;line-height:1.25}
 .footer-line{text-align:center;font-size:11.5px;font-family:'Inter',sans-serif;color:var(--text-l);padding:14px 0 4px;letter-spacing:.3px}
 .footer-line b{color:var(--pi-dark);font-weight:700}
 .toast{position:fixed;bottom:24px;right:24px;background:var(--pi-dark);color:var(--pi-mint);padding:10px 20px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100}
@@ -184,7 +186,7 @@ h1 strong{font-weight:700}
 @keyframes sddWave{0%,16%,100%{transform:scale(1);box-shadow:0 2px 8px rgba(11,61,59,.08);border-color:var(--pi-border);background:#fff;color:var(--pi-teal)}6%{transform:scale(1.18);box-shadow:0 8px 28px rgba(27,138,122,.55);border-color:var(--pi-teal);background:linear-gradient(135deg,#d6f5e8,#fff);color:var(--pi-dark)}}
 @keyframes sddArrowWave{0%,16%,100%{opacity:.3;color:var(--pi-teal);transform:translateX(0)}6%{opacity:1;color:var(--pi-light);transform:translateX(5px)}}
 @media(max-width:900px){.shell{flex-direction:column;padding:20px 20px 40px;gap:16px}.sidebar{position:static;width:100%;max-height:none;overflow-y:visible}.sidebar-inner{display:flex;flex-wrap:wrap;gap:4px;padding:4px}.sidebar-title{display:none}.sidebar-group{display:none}.nav-btn{width:auto;padding:6px 12px;border-left:0;border-bottom:2px solid transparent;border-radius:4px;font-size:12px}.nav-btn.active{border-left-color:transparent;border-bottom-color:var(--pi-teal);background:#e6f5ee}}
-@media(max-width:760px){h1{font-size:30px}.wrap{padding:0 18px}.act-body{margin-left:0;margin-top:12px}.cmd-code{min-width:auto}.overview{padding:24px 20px}.compare-grid{grid-template-columns:1fr}.cta{grid-template-columns:1fr;text-align:center}.cta-qr{justify-self:center}}
+@media(max-width:760px){h1{font-size:30px}.wrap{padding:0 18px}.act-body{margin-left:0;margin-top:12px}.cmd-code{min-width:auto}.overview{padding:24px 20px}.compare-grid{grid-template-columns:1fr}.cta{grid-template-columns:1fr;text-align:center}.cta-qrs{justify-self:center;justify-content:center}}
 </style>
 </head>
 <body>
@@ -194,7 +196,7 @@ h1 strong{font-weight:700}
     <div class="hdr-top">
       <!--<div class="logo"><span>&#9670;</span>PeerIslands</div>-->
       <img src="https://testrigor.com/wp-content/uploads/2025/03/peerislands-partner-logo_2.png" alt="PeerIslands" class="logo">
-      <div class="hdr-meta"><b>MONGODB CONFERENCE 2026</b><br>KEYNOTE SESSION<br>SPEC-DRIVEN DEVELOPMENT</div>
+      <div class="hdr-meta"><b>MUG PEERISLANDS MUMBAI CONFERENCE 2026</b><br>SUDEEP K. MASARE<br>KEYNOTE SESSION<br>SPEC-DRIVEN DEVELOPMENT</div>
     </div>
     <h1>AI-Powered<br><strong>Spec-Driven Development</strong></h1>
     <div class="pills">
@@ -437,32 +439,18 @@ function renderClosing(){
 
 function renderCTA(){
   const el=document.getElementById('cta');
-  const qr=`<svg viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
-    <rect width='80' height='80' fill='white'/>
-    <g fill='#0B3D3B'>
-      <rect x='4' y='4' width='18' height='18'/><rect x='8' y='8' width='10' height='10' fill='white'/><rect x='11' y='11' width='4' height='4'/>
-      <rect x='58' y='4' width='18' height='18'/><rect x='62' y='8' width='10' height='10' fill='white'/><rect x='65' y='11' width='4' height='4'/>
-      <rect x='4' y='58' width='18' height='18'/><rect x='8' y='62' width='10' height='10' fill='white'/><rect x='11' y='65' width='4' height='4'/>
-      <rect x='28' y='6' width='4' height='4'/><rect x='36' y='6' width='4' height='4'/><rect x='44' y='6' width='4' height='4'/>
-      <rect x='28' y='14' width='4' height='4'/><rect x='40' y='14' width='4' height='4'/><rect x='48' y='14' width='4' height='4'/>
-      <rect x='6' y='28' width='4' height='4'/><rect x='14' y='28' width='4' height='4'/><rect x='26' y='28' width='4' height='4'/><rect x='34' y='28' width='4' height='4'/><rect x='42' y='28' width='4' height='4'/><rect x='54' y='28' width='4' height='4'/><rect x='62' y='28' width='4' height='4'/><rect x='70' y='28' width='4' height='4'/>
-      <rect x='10' y='36' width='4' height='4'/><rect x='22' y='36' width='4' height='4'/><rect x='30' y='36' width='4' height='4'/><rect x='42' y='36' width='4' height='4'/><rect x='50' y='36' width='4' height='4'/><rect x='58' y='36' width='4' height='4'/><rect x='66' y='36' width='4' height='4'/>
-      <rect x='6' y='44' width='4' height='4'/><rect x='18' y='44' width='4' height='4'/><rect x='26' y='44' width='4' height='4'/><rect x='38' y='44' width='4' height='4'/><rect x='46' y='44' width='4' height='4'/><rect x='54' y='44' width='4' height='4'/><rect x='66' y='44' width='4' height='4'/><rect x='74' y='44' width='4' height='4'/>
-      <rect x='10' y='52' width='4' height='4'/><rect x='22' y='52' width='4' height='4'/><rect x='34' y='52' width='4' height='4'/><rect x='42' y='52' width='4' height='4'/><rect x='54' y='52' width='4' height='4'/><rect x='62' y='52' width='4' height='4'/><rect x='70' y='52' width='4' height='4'/>
-      <rect x='28' y='60' width='4' height='4'/><rect x='40' y='60' width='4' height='4'/><rect x='48' y='60' width='4' height='4'/><rect x='56' y='60' width='4' height='4'/>
-      <rect x='32' y='68' width='4' height='4'/><rect x='44' y='68' width='4' height='4'/><rect x='52' y='68' width='4' height='4'/><rect x='60' y='68' width='4' height='4'/><rect x='68' y='68' width='4' height='4'/>
-    </g>
-  </svg>`;
   el.innerHTML=`<div class="cta-left">
     <h3>Take SDD home with you</h3>
     <p>Clone the keynote repo, read the full spec, and reproduce the build in under an hour on your laptop. If you want to bring Spec-Driven Development into your enterprise MongoDB estate, we would love to talk.</p>
     <div class="cta-links">
       <div class="cta-link"><b>spec-kit</b><span>github.com/github/spec-kit</span></div>
-      <div class="cta-link"><b>Keynote repo</b><span>github.com/peerislands/smartinvoice-sdd</span></div>
       <div class="cta-link"><b>PeerIslands</b><span>peerislands.com &middot; connect@peerislands.com</span></div>
     </div>
   </div>
-  <div class="cta-qr">${qr}<small>Scan &middot; keynote repo</small></div>`;
+  <div class="cta-qrs">
+    <div class="cta-qr"><img src="assets/SDDGithubRepository.png" alt="QR code for the keynote GitHub repository"><small>GitHub</small></div>
+    <div class="cta-qr"><img src="assets/SudeepMasareLinkedin.png" alt="QR code for Sudeep Masare's LinkedIn profile"><small>Sudeep Masare LINKEDIN</small></div>
+  </div>`;
 }
 
 renderPrimer();renderOverview();renderCmds();renderActs();renderCompare();renderGotchas();renderClosing();renderCTA();initScrollSpy();
