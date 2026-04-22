@@ -250,7 +250,7 @@ const ACTS=[
     "/speckit.plan Project layout: backend/ (Node 20 + Express 4, entry server.js, port 4000, CORS allow http://localhost:3000) and frontend/ (Create React App, set proxy http://localhost:4000 in package.json). React hooks, dark + light themes with a theme-toggle button fixed in the top-right corner of every screen (including login and first-run setup); the selected theme MUST persist across sessions via localStorage under key `smartinvoice.theme`; MongoDB green (#00684A) accent in both themes. MongoDB via official Node.js driver (no Mongoose), collections: invoices, clients, counters. Sequential INV-XXXX via counters.findOneAndUpdate(). All amounts stored as integer paise \u2014 no floats. Business logic: calcLineTotal = qty \u00D7 unitPricePaise, calcSubtotal = \u03A3(lineTotals), calcTax = Math.floor(subtotal \u00D7 18 / 100), calcGrandTotal = subtotal + tax. \u20B9 INR display (paise / 100 for rendering). 8 REST endpoints: GET /api/dashboard (one $facet aggregation for stats + chart + recent invoices), GET /api/invoices, POST /api/invoices, GET /api/invoices/:id, PATCH /api/invoices/:id/status, POST /api/invoices/:id/payments, GET /api/invoices/:id/pdf (PDFKit, GST Rule 46 layout), GET /api/insights (aggregation pipelines: per-client payment score 0\u2013100 + 3-month SMA revenue forecast). Idempotent seed on startup: insert 4 clients + 8 invoices only when invoices collection is empty. Externalize MONGODB_URI, DB_NAME, COLL_INVOICES, COLL_CLIENTS, COLL_COUNTERS in .env loaded via dotenv \u2014 no hard-coded URIs or collection names in source. Commit .env.example; .env in .gitignore. Plan must include final startup tasks: npm install and start backend (background process, port 4000) then npm install and start frontend dev server (background process, port 3000) \u2014 app running at http://localhost:3000 by end of /speckit.implement. Jest test suite: every calculation formula, every validation rule, every endpoint \u2014 \u2265 90% line coverage, enforced in CI."
   ],description:"Define shared infrastructure \u2014 tech stack, MongoDB collections and indexes, externalized config, API contracts, business logic formulas, validation rules, and design tokens (including dark + light themes with a top-right toggle persisted to localStorage). One plan, one truth.",deliverable:"plan.md with MongoDB data model (5 collections: invoices, clients, counters, businesses, users \u2014 each with indexes and a JSON Schema validator), .env configuration contract, 8 API endpoints , 7 validation rules, calculation formulas, Jest test plan, dark/light theme spec with a persisted top-right toggle",narration:"The plan references the spec. Every API endpoint traces to a user story. Every formula is explicit. A new developer reads this ONE file and understands the entire system.",demoSteps:["Open plan.md \u2014 read the Collections section out loud (5 collections)","Show the Indexes table \u2014 partial unique index on (businessId, invoiceNumber)","Show the 8 REST endpoints tied to BR-X.X IDs; PDF is endpoint 3 with Accept: application/pdf","Show the JSON Schema validator for the invoices collection + the sanitizer that bridges it to MongoDB's $jsonSchema dialect"]},
   {num:5,title:"Tasks & Analysis",time:"22\u201327 min",type:"live",icon:"\u25CB",color:"#4A90D9",commands:["/speckit.tasks","/speckit.analyze"],description:"Break the plan into dependency-ordered, parallelizable tasks. Then cross-check all artifacts \u2014 constitution, spec, plan, tasks \u2014 for consistency before writing any code.",deliverable:"tasks.md (ordered with [P] parallel markers) + cross-artifact consistency report",narration:"Tasks are ordered by dependency. Some can run in parallel. /speckit.analyze confirms everything is consistent BEFORE we write a single line of code.",demoSteps:["Run /speckit.tasks \u2014 show the dependency graph","Highlight [P]-marked tasks that can run in parallel","Run /speckit.analyze \u2014 consistency report across all artifacts","Point out: if the spec drifted, this is where we would catch it"]},
-  {num:6,title:"Implement & Run",time:"27\u201335 min",type:"live",icon:"\u25B7",color:"#00A347",commands:["/speckit.implement"],description:"The moment of truth. spec-kit executes all tasks: scaffolds the project, reads MongoDB connection from .env, builds the data access layer, implements business logic, generates all UI components, emits the auto-generated Jest unit-test suite, and assembles the running application.",deliverable:"Running SmartInvoice application \u2014 live demo in browser, data persisted to MongoDB, Jest suite green (150+ tests across unit, integration, perf)",narration:"Watch the task list. Each task references the spec. The data model matches what we defined. The formulas are exactly what we wrote. Nothing improvised. Code AND tests generated FROM specs.",demoSteps:[
+  {num:6,title:"Implement & Run",time:"27\u201335 min",type:"live",icon:"\u25B7",color:"#00A347",commands:["/speckit.implement"],description:"The moment of truth. spec-kit executes all tasks: scaffolds the project, reads MongoDB connection from .env, builds the data access layer, implements business logic, generates all UI components, emits the auto-generated Jest unit-test suite, and assembles the running application.",deliverable:"Running SmartInvoice application \u2014 live in browser, data persisted to MongoDB, Jest suite green (150+ tests across unit, integration, perf)",narration:"Watch the task list. Each task references the spec. The data model matches what we defined. The formulas are exactly what we wrote. Nothing improvised. Code AND tests generated FROM specs.",demoSteps:[
     "Dashboard \u2014 4 stat cards, 12-month revenue chart, recent 5 invoices (all from one $facet aggregation)",
     "New Invoice \u2014 pick a seeded client, Net-15 due date auto-filled, line items recompute GST live",
     "Add line items \u2014 totals auto-calculate at 18% GST in integer paise (no floats ever)",
@@ -265,10 +265,10 @@ const ACTS=[
 ];
 const CMDS=[{cmd:"specify init smartinvoice --ai claude",desc:"Bootstrap project with Claude Code"},{cmd:"/speckit.constitution",desc:"Encode governing principles"},{cmd:"/speckit.specify",desc:"Generate structured spec from requirements"},{cmd:"/speckit.clarify",desc:"Ask targeted questions, resolve ambiguities"},{cmd:"/speckit.plan",desc:"Create technical implementation plan"},{cmd:"/speckit.tasks",desc:"Break plan into ordered tasks"},{cmd:"/speckit.implement",desc:"Execute all tasks, build the app"},{cmd:"/speckit.analyze",desc:"Cross-artifact consistency check"},{cmd:"/speckit.checklist",desc:"Acceptance criteria validation"}];
 const SCRIPTS=[
-  {cmd:"./preflight.sh",desc:"Pre-demo environment check — validates Node 20+, npm, MongoDB, Claude Code CLI, and required ports (3000/4000) are free. Run BEFORE the demo.",when:"Before /speckit.implement"},
+  {cmd:"./preflight.sh",desc:"Environment check — validates Node 20+, npm, MongoDB, Claude Code CLI, and required ports (3000/4000) are free. Run as a System Pre-check.",when:"Before /speckit.implement"},
   {cmd:"./start-demo.sh",desc:"Boots backend on :4000 and frontend on :3000 as background processes; tails logs to /tmp/smartinvoice-{backend,frontend}.log. Run AFTER /speckit.implement finishes.",when:"After /speckit.implement"},
   {cmd:"./stop-demo.sh",desc:"Stops both servers gracefully, force-kills anything still holding :3000/:4000. Safe to re-run. Override with BACKEND_PORT=... FRONTEND_PORT=... env vars.",when:"End of demo / cleanup"},
-  {cmd:"./reset-demo.sh",desc:"Stops processes and wipes smartinvoice/ back to a clean slate for a fresh demo run. Pass --bootstrap to auto-run specify init after the wipe.",when:"Between rehearsals / full reset"}
+  {cmd:"./reset-demo.sh",desc:"Stops processes and wipes smartinvoice/ back to a clean slate for a fresh pipeline run. Pass --bootstrap to auto-run specify init after the wipe.",when:"Between rehearsals / full reset"}
 ];
 const OVERVIEW_STAGES=[{num:1,sym:"\u25C6",label:"Principles",cap:"Governing rules"},{num:2,sym:"\u25C7",label:"Specify",cap:"Structured requirements"},{num:3,sym:"\u25B3",label:"Prototype",cap:"Wireframes & clarify"},{num:4,sym:"\u25A1",label:"Plan",cap:"MongoDB data model"},{num:5,sym:"\u25CB",label:"Tasks",cap:"Ordered breakdown"},{num:6,sym:"\u25B7",label:"Build",cap:"Spec\u2192code generation"},{num:7,sym:"\u2713",label:"Validate",cap:"Compliance check"}];
 const PRIMER_TAKEAWAYS=[{i:"01",t:"Specs as contracts",d:"Treat the spec as the signed agreement \u2014 the code is the compilation target, not the source."},{i:"02",t:"Document model first",d:"Declare MongoDB collections, indexes, and validators before any line of code is generated."},{i:"03",t:"Iterate where it's cheap",d:"Change wireframes in seconds instead of components in hours. Catch mistakes early."},{i:"04",t:"Validate on every turn",d:"Cross-check code against spec at every iteration. Drift is surfaced, not buried."}];
@@ -337,7 +337,7 @@ function renderOverview(){
   });
   el.innerHTML=`<div class="section-eyebrow sans">The 7-phase SDD flow</div>
   <h2>Spec-Driven Development at a Glance</h2>
-  <p class="section-sub sans">From a fuzzy business idea to a validated, running application &mdash; powered by spec-kit, Claude Code, and MongoDB. The animated highlight traces the end-to-end flow; click any stage to jump to that action.</p>
+  <p class="section-sub sans">From a fuzzy business idea to a validated, running application &mdash; powered by spec-kit, Claude Code, and MongoDB. Take a look at the end-to-end flow; click any stage to jump to that action.</p>
   <div class="sdd-flow"><div class="sdd-stages">${html}</div></div>
   <div class="sdd-loop">The flow <b>loops back</b> &mdash; every validation round feeds the next iteration of the spec. That is how SDD stays a living contract.</div>`;
 }
@@ -348,7 +348,7 @@ function renderCmds(){
   const scriptsRows=SCRIPTS.map((s,i)=>`<div class="cmd-row"><span class="cmd-num" style="background:var(--pi-dark)">${i+1}</span><span class="cmd-code">${s.cmd}</span><span class="cmd-desc sans"><b>${s.when}</b> &mdash; ${s.desc}</span></div>`).join('');
   el.innerHTML=`<div class="section-eyebrow sans">Helper shell scripts</div>
   <h2>4 Scripts, Demo Lifecycle</h2>
-  <p class="section-sub sans">These terminal helpers sit <b>outside</b> Claude Code and bracket the live demo: validate the machine, boot the running app, tear it down, and reset to a clean slate between rehearsals. All four live at the repo root and are committed to the demo repo.</p>
+  <p class="section-sub sans">Following are the terminal helpers for you, validate the machine, boot the running app, tear it down, and reset to a clean slate. All four live at the repo root and are committed to the demo repo.</p>
   ${scriptsRows}
   <div class="flow-wrap" aria-label="Typical demo flow from preflight through stop">
     <div class="flow-label">Typical Flow</div>
@@ -387,7 +387,7 @@ function renderCmds(){
   </div>
   <div class="section-eyebrow sans" style="margin-top:40px">Command reference</div>
   <h2>9 Commands, Full SDD Lifecycle</h2>
-  <p class="section-sub sans">The entire keynote runs on these nine commands. Each one maps to an artifact you can review, diff, and sign off on &mdash; no black boxes.</p>
+  <p class="section-sub sans">The execution flow runs on these nine commands. Each one maps to an artifact you can review, diff, and sign off on &mdash; no black boxes.</p>
   ${cmdsRows}`;
 }
 
@@ -427,7 +427,7 @@ function renderGotchas(){
   const el=document.getElementById('gotchas');
   el.innerHTML=`<div class="section-eyebrow sans">Where SDD is not a silver bullet</div>
   <h2>Tradeoffs we won't hide</h2>
-  <p class="section-sub sans">If a keynote only tells you what works, you're being sold to. Here is where we've seen SDD strain &mdash; and what to do about it.</p>
+  <p class="section-sub sans">Here is where we've seen SDD strain &mdash; and what to do about it.</p>
   <div class="gotcha-list">${GOTCHAS.map(g=>`<div class="gotcha"><b>${g.t}</b><p>${g.p}</p></div>`).join('')}</div>`;
 }
 
@@ -441,7 +441,7 @@ function renderCTA(){
   const el=document.getElementById('cta');
   el.innerHTML=`<div class="cta-left">
     <h3>Take SDD home with you</h3>
-    <p>Clone the keynote repo, read the full spec, and reproduce the build in under an hour on your laptop. If you want to bring Spec-Driven Development into your enterprise MongoDB estate, we would love to talk.</p>
+    <p>Clone the SDD GitHub Repository, read the full spec, and reproduce the build in under an hour on your laptop. If you want to bring Spec-Driven Development into your enterprise MongoDB estate, we would love to talk.</p>
     <div class="cta-links">
       <div class="cta-link"><b>spec-kit</b><span>github.com/github/spec-kit</span></div>
       <div class="cta-link"><b>PeerIslands</b><span>peerislands.com &middot; connect@peerislands.com</span></div>
