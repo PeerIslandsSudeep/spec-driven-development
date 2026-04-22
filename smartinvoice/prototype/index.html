@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartInvoice — Wireframe Prototype</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px;
+         background: #f0f2f5; color: #1a1a2e; min-height: 100vh; }
+
+  /* ── Layout ── */
+  .app { display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 220px; background: #1a1a2e; color: #c8cdd6; flex-shrink: 0;
+    display: flex; flex-direction: column; position: fixed; top: 0; left: 0;
+    height: 100vh; z-index: 100;
+  }
+  .sidebar-brand {
+    padding: 20px 18px 16px; border-bottom: 1px solid #2d3348;
+    font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+  }
+  .sidebar-brand span { color: #4f8ef7; }
+  .sidebar-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 1px; color: #4a5170;
+    text-transform: uppercase; padding: 18px 18px 6px;
+  }
+  .sidebar nav a {
+    display: flex; align-items: center; gap: 10px; padding: 9px 18px;
+    color: #8892a4; text-decoration: none; font-size: 13.5px; border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .sidebar nav a:hover { background: #252c42; color: #c8cdd6; }
+  .sidebar nav a.active { background: #1e2740; color: #fff; border-left-color: #4f8ef7; }
+  .sidebar nav a .icon { font-size: 16px; width: 20px; text-align: center; }
+  .sidebar-footer {
+    margin-top: auto; padding: 16px 18px; border-top: 1px solid #2d3348;
+    font-size: 12px; color: #4a5170;
+  }
+  .sidebar-footer strong { color: #8892a4; display: block; margin-bottom: 2px; }
+
+  /* ── Main Content ── */
+  .main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; }
+
+  /* ── Topbar ── */
+  .topbar {
+    background: #fff; border-bottom: 1px solid #e2e6ed; padding: 0 28px;
+    height: 56px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .topbar-title { font-size: 16px; font-weight: 600; color: #1a1a2e; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .badge-env {
+    background: #fff3cd; color: #856404; font-size: 11px; font-weight: 600;
+    padding: 3px 8px; border-radius: 4px; border: 1px solid #ffc107;
+  }
+  .avatar {
+    width: 32px; height: 32px; background: #4f8ef7; border-radius: 50%;
+    color: #fff; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── Page ── */
+  .page { padding: 28px; display: none; }
+  .page.active { display: block; }
+
+  /* ── Page Header ── */
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .page-header h1 { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+  .page-header p { font-size: 13px; color: #6b7280; margin-top: 2px; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 6px; font-size: 13.5px; font-weight: 500;
+    cursor: pointer; border: none; text-decoration: none; transition: all 0.15s;
+  }
+  .btn-primary { background: #4f8ef7; color: #fff; }
+  .btn-primary:hover { background: #3a7de0; }
+  .btn-secondary { background: #fff; color: #374151; border: 1px solid #d1d5db; }
+  .btn-secondary:hover { background: #f9fafb; }
+  .btn-success { background: #10b981; color: #fff; }
+  .btn-success:hover { background: #059669; }
+  .btn-danger { background: #ef4444; color: #fff; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn-ghost { background: transparent; color: #6b7280; border: 1px solid #e5e7eb; }
+  .btn-ghost:hover { background: #f3f4f6; }
+
+  /* ── Stat Cards ── */
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card {
+    background: #fff; border-radius: 10px; padding: 18px 20px;
+    border: 1px solid #e5e7eb; cursor: pointer; transition: all 0.15s;
+  }
+  .stat-card:hover { border-color: #4f8ef7; box-shadow: 0 2px 8px rgba(79,142,247,0.12); }
+  .stat-card .label { font-size: 12px; color: #6b7280; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-card .value { font-size: 26px; font-weight: 700; color: #1a1a2e; margin: 6px 0 2px; }
+  .stat-card .sub { font-size: 12px; color: #9ca3af; }
+  .stat-card.green .value { color: #10b981; }
+  .stat-card.orange .value { color: #f59e0b; }
+  .stat-card.red .value { color: #ef4444; }
+  .stat-card.blue .value { color: #4f8ef7; }
+
+  /* ── Cards ── */
+  .card {
+    background: #fff; border-radius: 10px; border: 1px solid #e5e7eb;
+    padding: 20px; margin-bottom: 20px;
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f3f4f6;
+  }
+  .card-title { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+
+  /* ── Chart ── */
+  .chart-container { padding: 8px 0; }
+  .chart-bars { display: flex; align-items: flex-end; gap: 6px; height: 120px; }
+  .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .chart-bar {
+    width: 100%; background: #4f8ef7; border-radius: 3px 3px 0 0;
+    transition: opacity 0.15s; cursor: pointer; position: relative;
+  }
+  .chart-bar:hover { opacity: 0.8; }
+  .chart-bar.empty { background: #e5e7eb; }
+  .chart-bar.current { background: #1d4ed8; }
+  .chart-month { font-size: 10px; color: #9ca3af; }
+  .chart-labels { display: flex; justify-content: space-between; margin-top: 6px; }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left; font-size: 11.5px; font-weight: 600; color: #6b7280;
+    text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px;
+    border-bottom: 1px solid #e5e7eb; background: #f9fafb;
+  }
+  tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.1s; }
+  tbody tr:hover { background: #f8faff; cursor: pointer; }
+  tbody td { padding: 11px 14px; font-size: 13.5px; color: #374151; }
+  tbody tr:last-child { border-bottom: none; }
+  td .inv-num { font-family: monospace; font-weight: 600; color: #4f8ef7; font-size: 13px; }
+  td .client { font-weight: 500; }
+  td .amount { font-weight: 600; color: #1a1a2e; }
+  td .muted { color: #9ca3af; font-size: 12px; }
+
+  /* ── Status Badges ── */
+  .badge {
+    display: inline-flex; align-items: center; padding: 3px 9px;
+    border-radius: 99px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.2px;
+  }
+  .badge-draft     { background: #f3f4f6; color: #6b7280; }
+  .badge-pending   { background: #fef3c7; color: #92400e; }
+  .badge-paid      { background: #d1fae5; color: #065f46; }
+  .badge-overdue   { background: #fee2e2; color: #991b1b; }
+  .badge-low       { background: #d1fae5; color: #065f46; }
+  .badge-medium    { background: #fef3c7; color: #92400e; }
+  .badge-high      { background: #fee2e2; color: #991b1b; }
+
+  /* ── Filter Tabs ── */
+  .filter-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid #e5e7eb; }
+  .filter-tab {
+    padding: 8px 16px; font-size: 13px; font-weight: 500; color: #6b7280;
+    cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .filter-tab:hover { color: #4f8ef7; }
+  .filter-tab.active { color: #4f8ef7; border-bottom-color: #4f8ef7; }
+  .filter-tab .count {
+    background: #e5e7eb; color: #6b7280; font-size: 11px; font-weight: 700;
+    padding: 1px 6px; border-radius: 99px; margin-left: 5px;
+  }
+  .filter-tab.active .count { background: #dbeafe; color: #1d4ed8; }
+
+  /* ── Search Bar ── */
+  .search-row { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; }
+  .search-input {
+    flex: 1; padding: 8px 12px 8px 34px; border: 1px solid #d1d5db; border-radius: 6px;
+    font-size: 13.5px; color: #374151; outline: none; background: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239ca3af' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: 10px center;
+  }
+  .search-input:focus { border-color: #4f8ef7; box-shadow: 0 0 0 3px rgba(79,142,247,0.1); }
+
+  /* ── Form Styles ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 12px; font-weight: 600; color: #374151; }
+  input, select, textarea {
+    padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;
+    font-size: 13.5px; color: #374151; outline: none; background: #fff; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: #4f8ef7; box-shadow: 0 0 0 3px rgba(79,142,247,0.1);
+  }
+  input[readonly], input[disabled] {
+    background: #f9fafb; color: #9ca3af; cursor: not-allowed;
+  }
+  .form-hint { font-size: 11.5px; color: #9ca3af; margin-top: 2px; }
+
+  /* ── Line Items Table ── */
+  .line-items-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+  .line-items-table th {
+    background: #f9fafb; text-align: left; padding: 8px 12px;
+    font-size: 11.5px; font-weight: 600; color: #6b7280; text-transform: uppercase;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .line-items-table td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+  .line-items-table input { border: 1px solid #e5e7eb; padding: 5px 8px; border-radius: 4px; }
+  .line-items-table input:focus { border-color: #4f8ef7; }
+  .line-items-table .remove-btn {
+    background: none; border: none; color: #ef4444; cursor: pointer; font-size: 16px; padding: 0 4px;
+  }
+
+  /* ── Totals Box ── */
+  .totals-box {
+    background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+    padding: 14px 18px; max-width: 320px; margin-left: auto;
+  }
+  .totals-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13.5px; }
+  .totals-row.total {
+    border-top: 1px solid #e5e7eb; margin-top: 6px; padding-top: 10px;
+    font-weight: 700; font-size: 15px; color: #1a1a2e;
+  }
+  .totals-row .gst-label { color: #6b7280; }
+  .totals-row .gst-val { color: #f59e0b; font-weight: 600; }
+
+  /* ── Status Timeline ── */
+  .timeline { display: flex; align-items: center; gap: 0; margin: 16px 0; }
+  .tl-step {
+    display: flex; flex-direction: column; align-items: center; flex: 1;
+  }
+  .tl-dot {
+    width: 32px; height: 32px; border-radius: 50%; border: 2px solid #e5e7eb;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; z-index: 1; position: relative;
+  }
+  .tl-dot.done { background: #10b981; border-color: #10b981; color: #fff; }
+  .tl-dot.current { background: #4f8ef7; border-color: #4f8ef7; color: #fff; }
+  .tl-dot.locked { background: #f3f4f6; border-color: #d1d5db; color: #9ca3af; }
+  .tl-label { font-size: 11px; color: #6b7280; margin-top: 6px; font-weight: 500; text-align: center; }
+  .tl-date { font-size: 10px; color: #9ca3af; margin-top: 2px; }
+  .tl-line { flex: 1; height: 2px; background: #e5e7eb; margin-top: -22px; }
+  .tl-line.done { background: #10b981; }
+
+  /* ── Detail Layout ── */
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .detail-block {
+    background: #f9fafb; border-radius: 8px; padding: 14px 16px;
+    border: 1px solid #e5e7eb;
+  }
+  .detail-block h4 { font-size: 11px; font-weight: 600; color: #9ca3af;
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .detail-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+  .detail-row .key { color: #6b7280; }
+  .detail-row .val { font-weight: 500; color: #1a1a2e; }
+
+  /* ── Action Bar ── */
+  .action-bar {
+    display: flex; gap: 10px; align-items: center;
+    padding: 16px 20px; background: #fff; border-top: 1px solid #e5e7eb;
+    border-radius: 0 0 10px 10px; margin-top: 20px;
+  }
+  .action-bar .spacer { flex: 1; }
+
+  /* ── AI Insights ── */
+  .score-bar-wrap { display: flex; align-items: center; gap: 10px; }
+  .score-bar { flex: 1; height: 6px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 99px; }
+  .score-fill.high-score { background: #10b981; }
+  .score-fill.mid-score  { background: #f59e0b; }
+  .score-fill.low-score  { background: #ef4444; }
+  .score-num { font-weight: 700; font-size: 13.5px; min-width: 28px; text-align: right; }
+
+  .forecast-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .forecast-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #2d3a5e 100%);
+    border-radius: 10px; padding: 20px; color: #fff; position: relative; overflow: hidden;
+  }
+  .forecast-card::after {
+    content: ''; position: absolute; top: -20px; right: -20px;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .forecast-card .fc-month { font-size: 12px; color: #8892a4; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  .forecast-card .fc-amount { font-size: 24px; font-weight: 700; margin: 8px 0 4px; color: #fff; }
+  .forecast-card .fc-trend { font-size: 12px; color: #4f8ef7; }
+  .forecast-card .fc-basis { font-size: 11px; color: #4a5170; margin-top: 6px; }
+
+  .risk-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .risk-card {
+    border-radius: 8px; padding: 14px 16px; text-align: center; border: 1px solid;
+  }
+  .risk-card.low  { background: #f0fdf4; border-color: #bbf7d0; }
+  .risk-card.med  { background: #fffbeb; border-color: #fde68a; }
+  .risk-card.hi   { background: #fef2f2; border-color: #fecaca; }
+  .risk-card .rc-count { font-size: 28px; font-weight: 800; }
+  .risk-card.low .rc-count { color: #065f46; }
+  .risk-card.med .rc-count { color: #92400e; }
+  .risk-card.hi  .rc-count { color: #991b1b; }
+  .risk-card .rc-label { font-size: 12px; font-weight: 600; margin-top: 2px; color: #6b7280; }
+
+  /* ── Interaction Table ── */
+  .interaction-section {
+    margin-top: 32px; padding-top: 24px; border-top: 2px dashed #c7d2fe;
+  }
+  .interaction-section h3 {
+    font-size: 13px; font-weight: 700; color: #4338ca; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .interaction-section h3::before {
+    content: '⚡'; font-size: 14px;
+  }
+  .interaction-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .interaction-table thead th {
+    background: #eef2ff; color: #3730a3; font-size: 11.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px;
+    border: 1px solid #c7d2fe; text-align: left;
+  }
+  .interaction-table tbody td {
+    padding: 9px 12px; border: 1px solid #e5e7eb; vertical-align: top;
+    background: #fff; color: #374151;
+  }
+  .interaction-table tbody tr:hover td { background: #f5f7ff; }
+  .trigger { font-weight: 600; color: #1a1a2e; }
+  .action-desc { color: #374151; }
+  .outcome { color: #065f46; }
+  .condition { font-size: 11.5px; color: #9ca3af; font-style: italic; }
+
+  /* ── Empty State ── */
+  .empty-state {
+    text-align: center; padding: 48px 24px; color: #9ca3af;
+  }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; margin-bottom: 16px; }
+
+  /* ── Pagination ── */
+  .pagination { display: flex; align-items: center; gap: 6px; justify-content: flex-end; margin-top: 16px; }
+  .page-btn {
+    width: 32px; height: 32px; border-radius: 6px; border: 1px solid #e5e7eb;
+    background: #fff; cursor: pointer; font-size: 13px; display: flex;
+    align-items: center; justify-content: center; color: #374151;
+  }
+  .page-btn.active { background: #4f8ef7; border-color: #4f8ef7; color: #fff; }
+  .page-btn:hover:not(.active) { background: #f9fafb; }
+  .page-info { font-size: 12px; color: #6b7280; margin-right: 8px; }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 1px solid #e5e7eb; margin: 20px 0; }
+
+  /* ── Lock Banner ── */
+  .lock-banner {
+    display: flex; align-items: center; gap: 10px; background: #fffbeb;
+    border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px;
+    font-size: 13px; color: #92400e; margin-bottom: 16px;
+  }
+
+  /* ── Tooltip ── */
+  .tooltip-wrap { position: relative; display: inline-block; }
+  .tooltip-wrap:hover .tooltip-box { display: block; }
+  .tooltip-box {
+    display: none; position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+    background: #1a1a2e; color: #fff; padding: 6px 10px; border-radius: 6px;
+    font-size: 12px; white-space: nowrap; z-index: 200;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #f1f5f9; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">Smart<span>Invoice</span></div>
+    <div class="sidebar-label">Main</div>
+    <nav>
+      <a href="#" class="active" onclick="showPage('dashboard',this)" id="nav-dashboard">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a href="#" onclick="showPage('invoices',this)" id="nav-invoices">
+        <span class="icon">🧾</span> Invoices
+      </a>
+      <a href="#" onclick="showPage('create',this)" id="nav-create">
+        <span class="icon">➕</span> New Invoice
+      </a>
+    </nav>
+    <div class="sidebar-label">Intelligence</div>
+    <nav>
+      <a href="#" onclick="showPage('insights',this)" id="nav-insights">
+        <span class="icon">🤖</span> AI Insights
+      </a>
+    </nav>
+    <div class="sidebar-label">Account</div>
+    <nav>
+      <a href="#" onclick="alert('Settings — out of scope for v1 prototype')">
+        <span class="icon">⚙️</span> Settings
+      </a>
+      <a href="#" onclick="alert('Logout — session destroyed, redirect to /login')">
+        <span class="icon">🚪</span> Logout
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <strong>Ravi Sharma</strong>
+      ravi@tarpaulinco.in
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+    <div class="topbar">
+      <span class="topbar-title" id="topbar-title">Dashboard</span>
+      <div class="topbar-right">
+        <span class="badge-env">Wireframe Prototype</span>
+        <div class="avatar">RS</div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         SCREEN 1 · DASHBOARD
+         ════════════════════════════════════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Financial overview — as of last page load · 21 Apr 2026, 10:42 AM</p>
+        </div>
+        <button class="btn btn-primary" onclick="showPage('create', document.getElementById('nav-create'))">
+          ➕ New Invoice
+        </button>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stat-grid">
+        <div class="stat-card green" onclick="filterAndGo('paid')">
+          <div class="label">Total Revenue</div>
+          <div class="value">₹4,72,300</div>
+          <div class="sub">38 paid invoices ↑ click to filter</div>
+        </div>
+        <div class="stat-card orange" onclick="filterAndGo('pending')">
+          <div class="label">Total Outstanding</div>
+          <div class="value">₹1,18,000</div>
+          <div class="sub">12 pending + overdue ↑ click to filter</div>
+        </div>
+        <div class="stat-card red" onclick="filterAndGo('overdue')">
+          <div class="label">Overdue Invoices</div>
+          <div class="value">4</div>
+          <div class="sub">₹38,200 at risk ↑ click to filter</div>
+        </div>
+        <div class="stat-card blue" onclick="filterAndGo('all')">
+          <div class="label">Total Invoices</div>
+          <div class="value">54</div>
+          <div class="sub">Since INV-0001 ↑ click to filter</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1.6fr 1fr; gap: 20px;">
+
+        <!-- Monthly Revenue Chart -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Monthly Revenue — 2026</span>
+            <span style="font-size:12px;color:#9ca3af;">Paid invoices only · INR</span>
+          </div>
+          <div class="chart-container">
+            <div class="chart-bars">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:45px;" title="Jan: ₹28,500"></div>
+                <span class="chart-month">Jan</span>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:62px;" title="Feb: ₹39,200"></div>
+                <span class="chart-month">Feb</span>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:80px;" title="Mar: ₹50,600"></div>
+                <span class="chart-month">Mar</span>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar current" style="height:95px;" title="Apr: ₹60,000"></div>
+                <span class="chart-month">Apr</span>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar empty" style="height:8px;" title="May: ₹0"></div>
+                <span class="chart-month">May</span>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar empty" style="height:8px;"></div>
+                <span class="chart-month">Jun</span>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar empty" style="height:8px;"></div>
+                <span class="chart-month">Jul</span>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar empty" style="height:8px;"></div>
+                <span class="chart-month">Aug</span>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar empty" style="height:8px;"></div>
+                <span class="chart-month">Sep</span>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar empty" style="height:8px;"></div>
+                <span class="chart-month">Oct</span>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar empty" style="height:8px;"></div>
+                <span class="chart-month">Nov</span>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar empty" style="height:8px;"></div>
+                <span class="chart-month">Dec</span>
+              </div>
+            </div>
+            <p style="font-size:11px;color:#9ca3af;margin-top:8px;text-align:right;">
+              ■ Current month &nbsp; ■ Previous months &nbsp; □ No data
+            </p>
+          </div>
+        </div>
+
+        <!-- Recent Invoices -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Invoices</span>
+            <a href="#" onclick="showPage('invoices',document.getElementById('nav-invoices'))"
+               style="font-size:12px;color:#4f8ef7;text-decoration:none;">View all →</a>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Invoice</th><th>Client</th><th>Amount</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr onclick="showPage('detail',null)">
+                <td><span class="inv-num">INV-0054</span></td>
+                <td>Mehta Traders</td>
+                <td class="amount">₹23,600</td>
+                <td><span class="badge badge-pending">Pending</span></td>
+              </tr>
+              <tr onclick="showPage('detail',null)">
+                <td><span class="inv-num">INV-0053</span></td>
+                <td>Reddy Exports</td>
+                <td class="amount">₹11,800</td>
+                <td><span class="badge badge-overdue">Overdue</span></td>
+              </tr>
+              <tr onclick="showPage('detail',null)">
+                <td><span class="inv-num">INV-0052</span></td>
+                <td>Singh & Sons</td>
+                <td class="amount">₹47,200</td>
+                <td><span class="badge badge-paid">Paid</span></td>
+              </tr>
+              <tr onclick="showPage('detail',null)">
+                <td><span class="inv-num">INV-0051</span></td>
+                <td>Kapoor Fabrics</td>
+                <td class="amount">₹8,260</td>
+                <td><span class="badge badge-draft">Draft</span></td>
+              </tr>
+              <tr onclick="showPage('detail',null)">
+                <td><span class="inv-num">INV-0050</span></td>
+                <td>Nair Tech</td>
+                <td class="amount">₹61,800</td>
+                <td><span class="badge badge-paid">Paid</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Interaction Table -->
+      <div class="interaction-section">
+        <h3>Screen 1 — Dashboard · Interaction Table</h3>
+        <table class="interaction-table">
+          <thead>
+            <tr><th>Trigger</th><th>Element</th><th>Action / Behaviour</th><th>Outcome</th><th>Condition</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>Total Revenue card</td>
+              <td class="action-desc">Navigate to Invoice List with filter = "Paid"</td>
+              <td class="outcome">Invoice List screen loads, Paid tab active</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>Total Outstanding card</td>
+              <td class="action-desc">Navigate to Invoice List with filter = "Pending + Overdue"</td>
+              <td class="outcome">Invoice List screen, Pending tab active</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>Overdue Invoices card</td>
+              <td class="action-desc">Navigate to Invoice List with filter = "Overdue"</td>
+              <td class="outcome">Invoice List screen, Overdue tab active</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>Total Invoices card</td>
+              <td class="action-desc">Navigate to Invoice List with filter = "All"</td>
+              <td class="outcome">Invoice List screen, All tab active</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>Monthly chart bar</td>
+              <td class="action-desc">Show tooltip with month name + exact revenue amount</td>
+              <td class="outcome">Tooltip displayed above bar</td>
+              <td class="condition">Bar has data (non-zero)</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>Recent invoice row</td>
+              <td class="action-desc">Navigate to Invoice Detail for that invoice</td>
+              <td class="outcome">Invoice Detail screen loads for selected INV-XXXX</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"View all →" link</td>
+              <td class="action-desc">Navigate to Invoice List (no filter applied)</td>
+              <td class="outcome">Invoice List screen, All tab active</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"New Invoice" button</td>
+              <td class="action-desc">Navigate to Create Invoice screen</td>
+              <td class="outcome">Create Invoice screen with blank form</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Page Load</td>
+              <td>Dashboard page</td>
+              <td class="action-desc">Execute MongoDB aggregation pipeline; populate all 4 stats + chart + recent list</td>
+              <td class="outcome">All widgets display current data from DB</td>
+              <td class="condition">User authenticated (session valid)</td>
+            </tr>
+            <tr>
+              <td class="trigger">Page Load (empty)</td>
+              <td>Dashboard page</td>
+              <td class="action-desc">Detect zero invoices; show empty-state CTA "Create your first invoice"</td>
+              <td class="outcome">Stats show ₹0 / 0; chart shows all-zero bars; CTA visible</td>
+              <td class="condition">No invoices in DB</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         SCREEN 2 · INVOICE LIST
+         ════════════════════════════════════ -->
+    <div class="page" id="page-invoices">
+      <div class="page-header">
+        <div>
+          <h1>Invoices</h1>
+          <p>54 invoices total · paginated 10 per page</p>
+        </div>
+        <button class="btn btn-primary" onclick="showPage('create', document.getElementById('nav-create'))">
+          ➕ New Invoice
+        </button>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="filter-tabs" id="invoice-filter-tabs">
+        <div class="filter-tab active" onclick="setFilter('all',this)">All <span class="count">54</span></div>
+        <div class="filter-tab" onclick="setFilter('draft',this)">Draft <span class="count">4</span></div>
+        <div class="filter-tab" onclick="setFilter('pending',this)">Pending <span class="count">8</span></div>
+        <div class="filter-tab" onclick="setFilter('overdue',this)">Overdue <span class="count">4</span></div>
+        <div class="filter-tab" onclick="setFilter('paid',this)">Paid <span class="count">38</span></div>
+      </div>
+
+      <!-- Search -->
+      <div class="search-row">
+        <input class="search-input" type="text" placeholder="Search by client name or invoice number…" />
+        <select style="width:160px;">
+          <option>Sort: Newest first</option>
+          <option>Sort: Oldest first</option>
+          <option>Sort: Amount ↓</option>
+          <option>Sort: Amount ↑</option>
+          <option>Sort: Due date</option>
+        </select>
+      </div>
+
+      <!-- Table -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Invoice #</th>
+                <th>Client</th>
+                <th>Subtotal</th>
+                <th>GST (18%)</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr onclick="showPage('detail',null)">
+                <td><span class="inv-num">INV-0054</span></td>
+                <td class="client">Mehta Traders</td>
+                <td>₹20,000</td>
+                <td class="muted">₹3,600</td>
+                <td class="amount">₹23,600</td>
+                <td><span class="badge badge-pending">Pending</span></td>
+                <td class="muted">15 Apr 2026</td>
+                <td class="muted" style="color:#f59e0b;">15 May 2026</td>
+                <td onclick="event.stopPropagation()">
+                  <button class="btn btn-sm btn-success" onclick="alert('Status → Paid · Timestamp recorded')">Mark Paid</button>
+                </td>
+              </tr>
+              <tr onclick="showPage('detail',null)">
+                <td><span class="inv-num">INV-0053</span></td>
+                <td class="client">Reddy Exports</td>
+                <td>₹10,000</td>
+                <td class="muted">₹1,800</td>
+                <td class="amount">₹11,800</td>
+                <td><span class="badge badge-overdue">Overdue</span></td>
+                <td class="muted">01 Mar 2026</td>
+                <td class="muted" style="color:#ef4444;">31 Mar 2026</td>
+                <td onclick="event.stopPropagation()">
+                  <button class="btn btn-sm btn-success" onclick="alert('Status → Paid · Timestamp recorded')">Mark Paid</button>
+                </td>
+              </tr>
+              <tr onclick="showPage('detail',null)">
+                <td><span class="inv-num">INV-0052</span></td>
+                <td class="client">Singh & Sons</td>
+                <td>₹40,000</td>
+                <td class="muted">₹7,200</td>
+                <td class="amount">₹47,200</td>
+                <td><span class="badge badge-paid">Paid</span></td>
+                <td class="muted">10 Mar 2026</td>
+                <td class="muted">09 Apr 2026</td>
+                <td>—</td>
+              </tr>
+              <tr onclick="showPage('detail',null)">
+                <td><span class="inv-num">INV-0051</span></td>
+                <td class="client">Kapoor Fabrics</td>
+                <td>₹7,000</td>
+                <td class="muted">₹1,260</td>
+                <td class="amount">₹8,260</td>
+                <td><span class="badge badge-draft">Draft</span></td>
+                <td class="muted">20 Apr 2026</td>
+                <td class="muted">20 May 2026</td>
+                <td onclick="event.stopPropagation()" style="display:flex;gap:4px;align-items:center;">
+                  <button class="btn btn-sm btn-secondary" onclick="showPage('create',document.getElementById('nav-create'))">Edit</button>
+                  <button class="btn btn-sm btn-primary" onclick="alert('Status → Pending · Mark as Sent timestamp recorded')">Send</button>
+                </td>
+              </tr>
+              <tr onclick="showPage('detail',null)">
+                <td><span class="inv-num">INV-0050</span></td>
+                <td class="client">Nair Tech</td>
+                <td>₹52,375</td>
+                <td class="muted">₹9,428</td>
+                <td class="amount">₹61,803</td>
+                <td><span class="badge badge-paid">Paid</span></td>
+                <td class="muted">05 Feb 2026</td>
+                <td class="muted">07 Mar 2026</td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding: 12px 16px; border-top: 1px solid #f3f4f6; display:flex; align-items:center;">
+          <span class="page-info">Showing 1–10 of 54 invoices</span>
+          <div class="pagination">
+            <button class="page-btn">‹</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">…</button>
+            <button class="page-btn">6</button>
+            <button class="page-btn">›</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interaction Table -->
+      <div class="interaction-section">
+        <h3>Screen 2 — Invoice List · Interaction Table</h3>
+        <table class="interaction-table">
+          <thead>
+            <tr><th>Trigger</th><th>Element</th><th>Action / Behaviour</th><th>Outcome</th><th>Condition</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>Filter tab (All / Draft / Pending / Overdue / Paid)</td>
+              <td class="action-desc">Re-query list with status filter; update tab active state and count badges</td>
+              <td class="outcome">Table refreshes showing only matching invoices</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Type</td>
+              <td>Search input</td>
+              <td class="action-desc">Filter list by client name substring or INV-XXXX number match (debounced 300ms)</td>
+              <td class="outcome">Table narrows to matching rows; count badge updates</td>
+              <td class="condition">Minimum 2 characters typed</td>
+            </tr>
+            <tr>
+              <td class="trigger">Change</td>
+              <td>Sort dropdown</td>
+              <td class="action-desc">Re-sort displayed rows by selected criterion</td>
+              <td class="outcome">Table rows reorder; no page reload</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>Invoice row (anywhere except action buttons)</td>
+              <td class="action-desc">Navigate to Invoice Detail for that invoice</td>
+              <td class="outcome">Invoice Detail screen loads</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"Edit" button (draft only)</td>
+              <td class="action-desc">Navigate to Create Invoice screen in edit mode for that invoice</td>
+              <td class="outcome">Create Invoice form pre-filled with draft data</td>
+              <td class="condition">Status = Draft</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"Send" button (draft only)</td>
+              <td class="action-desc">Transition invoice status draft → pending; record sent timestamp</td>
+              <td class="outcome">Badge updates to Pending; "Send" button disappears; "Mark Paid" appears</td>
+              <td class="condition">Status = Draft</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"Mark Paid" button (pending / overdue)</td>
+              <td class="action-desc">Transition invoice status → paid; record payment timestamp</td>
+              <td class="outcome">Badge updates to Paid; action buttons disappear; row still visible</td>
+              <td class="condition">Status = Pending or Overdue</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>Pagination button</td>
+              <td class="action-desc">Load next/previous page of invoices (10 per page)</td>
+              <td class="outcome">Table rows update; active page button highlights</td>
+              <td class="condition">More than 10 invoices match current filter</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"New Invoice" button</td>
+              <td class="action-desc">Navigate to Create Invoice screen</td>
+              <td class="outcome">Create Invoice screen with blank form; next INV-XXXX assigned on save</td>
+              <td class="condition">Always</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         SCREEN 3 · CREATE / EDIT INVOICE
+         ════════════════════════════════════ -->
+    <div class="page" id="page-create">
+      <div class="page-header">
+        <div>
+          <h1>New Invoice</h1>
+          <p>Invoice number assigned on save · Draft auto-saved every 30 seconds</p>
+        </div>
+        <span style="font-family:monospace;font-size:16px;font-weight:700;color:#9ca3af;background:#f3f4f6;padding:6px 14px;border-radius:6px;">INV-0055 (preview)</span>
+      </div>
+
+      <div class="card">
+        <!-- Client & Dates -->
+        <div class="card-header">
+          <span class="card-title">Client & Dates</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Client *</label>
+            <select>
+              <option value="">— Select existing client —</option>
+              <option>Mehta Traders (mehta@tarpaulinco.in)</option>
+              <option>Reddy Exports (reddy@exports.co.in)</option>
+              <option>Singh & Sons (singh@singhandsons.com)</option>
+              <option>Kapoor Fabrics (kapoor@fabrics.in)</option>
+              <option>Nair Tech (nair@nairtech.io)</option>
+              <option value="__new__">＋ Add new client…</option>
+            </select>
+            <span class="form-hint">Client email is the unique identifier · duplicate emails rejected</span>
+          </div>
+          <div class="form-group">
+            <label>Issue Date *</label>
+            <input type="date" value="2026-04-21" />
+          </div>
+          <div class="form-group">
+            <label>Due Date *</label>
+            <input type="date" value="2026-05-21" />
+            <span class="form-hint">Default: 30 days from issue date</span>
+          </div>
+          <div class="form-group">
+            <label>Notes (optional)</label>
+            <input type="text" placeholder="Payment terms, delivery details…" />
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Line Items -->
+        <div class="card-header" style="margin-top:4px;">
+          <span class="card-title">Line Items</span>
+          <button class="btn btn-ghost btn-sm" onclick="alert('New line item row added · GST recalculated')">＋ Add Item</button>
+        </div>
+        <table class="line-items-table">
+          <thead>
+            <tr>
+              <th style="width:40%">Description</th>
+              <th style="width:12%">Qty</th>
+              <th style="width:18%">Unit Price (₹)</th>
+              <th style="width:18%">Line Total (₹)</th>
+              <th style="width:12%"></th>
+            </tr>
+          </thead>
+          <tbody id="line-items-body">
+            <tr>
+              <td><input type="text" value="Tarpaulin 20×30 ft (Blue)" style="width:100%"></td>
+              <td><input type="number" value="10" style="width:60px" oninput="recalc()"></td>
+              <td><input type="number" value="1200" style="width:90px" oninput="recalc()"></td>
+              <td><input type="text" value="₹12,000" readonly style="width:90px"></td>
+              <td><button class="remove-btn" onclick="removeRow(this)" title="Remove line">✕</button></td>
+            </tr>
+            <tr>
+              <td><input type="text" value="HDPE Rope (per bundle)" style="width:100%"></td>
+              <td><input type="number" value="5" style="width:60px" oninput="recalc()"></td>
+              <td><input type="number" value="800" style="width:90px" oninput="recalc()"></td>
+              <td><input type="text" value="₹4,000" readonly style="width:90px"></td>
+              <td><button class="remove-btn" onclick="removeRow(this)" title="Remove line">✕</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Totals -->
+        <div class="totals-box">
+          <div class="totals-row"><span>Subtotal</span><span id="subtotal">₹16,000</span></div>
+          <div class="totals-row"><span class="gst-label">GST @ 18% (CGST 9% + SGST 9%)</span><span class="gst-val" id="gst-amount">₹2,880</span></div>
+          <div class="totals-row total"><span>Grand Total</span><span id="grand-total">₹18,880</span></div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+          <button class="btn btn-secondary" onclick="showPage('invoices',document.getElementById('nav-invoices'))">✕ Cancel</button>
+          <div class="spacer"></div>
+          <button class="btn btn-ghost" onclick="alert('Saved as Draft · INV-0055 created · redirect to Invoice Detail')">💾 Save as Draft</button>
+          <button class="btn btn-primary" onclick="alert('Saved + Marked as Sent · Status → Pending · redirect to Invoice Detail')">📤 Save &amp; Mark as Sent</button>
+        </div>
+      </div>
+
+      <!-- Interaction Table -->
+      <div class="interaction-section">
+        <h3>Screen 3 — Create Invoice · Interaction Table</h3>
+        <table class="interaction-table">
+          <thead>
+            <tr><th>Trigger</th><th>Element</th><th>Action / Behaviour</th><th>Outcome</th><th>Condition</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="trigger">Change</td>
+              <td>Qty or Unit Price input in any line item</td>
+              <td class="action-desc">Recalculate line total = qty × unit price; recalculate subtotal, GST (18%), grand total</td>
+              <td class="outcome">All totals update in real time; no submit required</td>
+              <td class="condition">Always (on input)</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"＋ Add Item" button</td>
+              <td class="action-desc">Append new blank line item row to table; focus Description field</td>
+              <td class="outcome">New row appears; totals unchanged until values entered</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>✕ Remove button on a line item</td>
+              <td class="action-desc">Remove that row from DOM; recalculate all totals</td>
+              <td class="outcome">Row disappears; totals update immediately</td>
+              <td class="condition">At least 1 other line item exists</td>
+            </tr>
+            <tr>
+              <td class="trigger">Select</td>
+              <td>Client dropdown — existing client</td>
+              <td class="action-desc">Populate client display name and email for confirmation</td>
+              <td class="outcome">Client name shown; validation clears; form ready to save</td>
+              <td class="condition">Client exists in DB</td>
+            </tr>
+            <tr>
+              <td class="trigger">Select</td>
+              <td>Client dropdown — "Add new client"</td>
+              <td class="action-desc">Expand inline "New Client" sub-form (name, email, phone, address, GSTIN)</td>
+              <td class="outcome">Sub-form appears below dropdown; email uniqueness validated on blur</td>
+              <td class="condition">User selects "＋ Add new client…" option</td>
+            </tr>
+            <tr>
+              <td class="trigger">Blur</td>
+              <td>New client email input</td>
+              <td class="action-desc">Check email uniqueness against DB; show error if duplicate</td>
+              <td class="outcome">Error message: "Client with this email already exists. Select from list."</td>
+              <td class="condition">Email matches existing client record</td>
+            </tr>
+            <tr>
+              <td class="trigger">Change</td>
+              <td>Issue Date</td>
+              <td class="action-desc">Auto-set Due Date = Issue Date + 30 days (if Due Date not yet manually set)</td>
+              <td class="outcome">Due Date input auto-fills; user can override</td>
+              <td class="condition">Due Date not manually set by user</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"Save as Draft" button</td>
+              <td class="action-desc">Validate required fields (client, ≥1 line item); assign INV-XXXX; persist invoice with status=draft</td>
+              <td class="outcome">Redirect to Invoice Detail · status badge = Draft</td>
+              <td class="condition">Client selected + at least 1 line item with description and price</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"Save &amp; Mark as Sent" button</td>
+              <td class="action-desc">Same as Save Draft + immediately transition status → pending; record sent timestamp</td>
+              <td class="outcome">Redirect to Invoice Detail · status badge = Pending</td>
+              <td class="condition">Same as Save Draft</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"✕ Cancel" button</td>
+              <td class="action-desc">Discard all unsaved changes; navigate back to Invoice List</td>
+              <td class="outcome">Invoice List screen; no new invoice created</td>
+              <td class="condition">New invoice (not editing existing draft)</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"✕ Cancel" button (editing draft)</td>
+              <td class="action-desc">Discard edits; navigate to Invoice Detail showing last saved state</td>
+              <td class="outcome">Invoice Detail with original draft values restored</td>
+              <td class="condition">Editing an existing draft invoice</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         SCREEN 4 · INVOICE DETAIL
+         ════════════════════════════════════ -->
+    <div class="page" id="page-detail">
+      <div class="page-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <button class="btn btn-ghost btn-sm" onclick="showPage('invoices',document.getElementById('nav-invoices'))">← Back</button>
+          <div>
+            <h1 style="display:flex;align-items:center;gap:10px;">
+              INV-0053 <span class="badge badge-overdue">Overdue</span>
+            </h1>
+            <p>Created 01 Mar 2026 · Due 31 Mar 2026 · 21 days overdue</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-success" onclick="alert('Status → Paid · Payment timestamp recorded · 21 Apr 2026')">✓ Mark as Paid</button>
+        </div>
+      </div>
+
+      <!-- Lock Banner (shown for non-draft) -->
+      <div class="lock-banner">
+        🔒 This invoice is locked — it has been sent to the client. To make corrections, create a new invoice.
+      </div>
+
+      <!-- Status Timeline -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Invoice Lifecycle</span></div>
+        <div class="timeline">
+          <div class="tl-step">
+            <div class="tl-dot done">✓</div>
+            <div class="tl-label">Draft</div>
+            <div class="tl-date">01 Mar 2026</div>
+          </div>
+          <div class="tl-line done"></div>
+          <div class="tl-step">
+            <div class="tl-dot done">✓</div>
+            <div class="tl-label">Sent</div>
+            <div class="tl-date">02 Mar 2026</div>
+          </div>
+          <div class="tl-line done"></div>
+          <div class="tl-step">
+            <div class="tl-dot current">!</div>
+            <div class="tl-label">Overdue</div>
+            <div class="tl-date">31 Mar 2026</div>
+          </div>
+          <div class="tl-line"></div>
+          <div class="tl-step">
+            <div class="tl-dot locked">○</div>
+            <div class="tl-label">Paid</div>
+            <div class="tl-date">Awaiting</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail Blocks -->
+      <div class="detail-grid">
+        <div class="detail-block">
+          <h4>Client</h4>
+          <div class="detail-row"><span class="key">Name</span><span class="val">Reddy Exports Pvt Ltd</span></div>
+          <div class="detail-row"><span class="key">Email</span><span class="val">reddy@exports.co.in</span></div>
+          <div class="detail-row"><span class="key">Phone</span><span class="val">+91 98765 43210</span></div>
+          <div class="detail-row"><span class="key">GSTIN</span><span class="val">29AADCE3455F1Z5</span></div>
+          <div class="detail-row"><span class="key">Address</span><span class="val">12 MG Road, Bengaluru 560001</span></div>
+        </div>
+        <div class="detail-block">
+          <h4>Invoice Info</h4>
+          <div class="detail-row"><span class="key">Invoice #</span><span class="val" style="font-family:monospace;color:#4f8ef7">INV-0053</span></div>
+          <div class="detail-row"><span class="key">Issue Date</span><span class="val">01 Mar 2026</span></div>
+          <div class="detail-row"><span class="key">Due Date</span><span class="val" style="color:#ef4444">31 Mar 2026 (Overdue)</span></div>
+          <div class="detail-row"><span class="key">Sent On</span><span class="val">02 Mar 2026, 11:30 AM</span></div>
+          <div class="detail-row"><span class="key">Payment</span><span class="val" style="color:#9ca3af">Not received</span></div>
+        </div>
+      </div>
+
+      <!-- Line Items -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Line Items</span></div>
+        <table>
+          <thead>
+            <tr><th>Description</th><th>Qty</th><th>Unit Price</th><th style="text-align:right">Line Total</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Industrial Tarpaulin 40×60 ft (Green)</td>
+              <td>4</td>
+              <td>₹2,000</td>
+              <td style="text-align:right" class="amount">₹8,000</td>
+            </tr>
+            <tr>
+              <td>Eyelet Reinforcement Kit</td>
+              <td>4</td>
+              <td>₹250</td>
+              <td style="text-align:right" class="amount">₹1,000</td>
+            </tr>
+            <tr>
+              <td>Delivery & Handling (Bengaluru)</td>
+              <td>1</td>
+              <td>₹1,000</td>
+              <td style="text-align:right" class="amount">₹1,000</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;">
+          <div class="totals-box">
+            <div class="totals-row"><span>Subtotal</span><span>₹10,000</span></div>
+            <div class="totals-row"><span class="gst-label">GST @ 18% (CGST 9% + SGST 9%)</span><span class="gst-val">₹1,800</span></div>
+            <div class="totals-row total"><span>Grand Total</span><span>₹11,800</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interaction Table -->
+      <div class="interaction-section">
+        <h3>Screen 4 — Invoice Detail · Interaction Table</h3>
+        <table class="interaction-table">
+          <thead>
+            <tr><th>Trigger</th><th>Element</th><th>Action / Behaviour</th><th>Outcome</th><th>Condition</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="trigger">Page Load</td>
+              <td>Invoice Detail</td>
+              <td class="action-desc">Fetch invoice by ID; render all fields, line items, totals, timeline; determine lock state</td>
+              <td class="outcome">Page renders with current DB data; lock banner shown for non-draft</td>
+              <td class="condition">Always (authenticated)</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"← Back" button</td>
+              <td class="action-desc">Navigate back to Invoice List (preserving active filter)</td>
+              <td class="outcome">Invoice List screen with last active filter restored</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"Edit" button</td>
+              <td class="action-desc">Navigate to Create Invoice screen in edit mode, pre-filled with this invoice's data</td>
+              <td class="outcome">Create Invoice form loaded with existing values editable</td>
+              <td class="condition">Status = Draft only</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"Mark as Sent" button</td>
+              <td class="action-desc">Transition status draft → pending; record sent timestamp; show confirmation</td>
+              <td class="outcome">Status badge updates to Pending; timeline advances; lock banner appears; button replaced with "Mark as Paid"</td>
+              <td class="condition">Status = Draft</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"Mark as Paid" button</td>
+              <td class="action-desc">Transition status (pending or overdue) → paid; record payment timestamp</td>
+              <td class="outcome">Status badge updates to Paid; timeline fully complete; all action buttons hidden</td>
+              <td class="condition">Status = Pending or Overdue</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>"Delete" button (draft only)</td>
+              <td class="action-desc">Show confirmation dialog: "Delete INV-XXXX permanently?" with Cancel / Confirm Delete</td>
+              <td class="outcome">On confirm: invoice deleted; redirect to Invoice List. Sequence gap is left (not backfilled).</td>
+              <td class="condition">Status = Draft only</td>
+            </tr>
+            <tr>
+              <td class="trigger">Attempt edit</td>
+              <td>Any field (locked invoice)</td>
+              <td class="action-desc">System prevents any modification; lock banner is always visible</td>
+              <td class="outcome">No input fields are rendered; lock banner explains invoice is read-only</td>
+              <td class="condition">Status = Pending, Paid, or Overdue</td>
+            </tr>
+            <tr>
+              <td class="trigger">Overdue check</td>
+              <td>On page load</td>
+              <td class="action-desc">If status = pending AND today > due date, transition status → overdue automatically</td>
+              <td class="outcome">Status badge shows Overdue; timeline updates; overdue date recorded</td>
+              <td class="condition">Status = Pending AND due date has passed</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         SCREEN 5 · AI INSIGHTS
+         ════════════════════════════════════ -->
+    <div class="page" id="page-insights">
+      <div class="page-header">
+        <div>
+          <h1>AI Insights</h1>
+          <p>Computed via MongoDB aggregation pipelines · Refreshed on page load</p>
+        </div>
+        <span style="font-size:12px;color:#9ca3af;background:#f3f4f6;padding:6px 12px;border-radius:6px;">
+          Based on 54 invoices · 21 Apr 2026, 10:42 AM
+        </span>
+      </div>
+
+      <!-- 3-Month Revenue Forecast -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">3-Month Revenue Forecast</span>
+          <span style="font-size:12px;color:#9ca3af;">Weighted moving average · historical paid invoice data</span>
+        </div>
+        <div class="forecast-grid">
+          <div class="forecast-card">
+            <div class="fc-month">May 2026</div>
+            <div class="fc-amount">₹64,200</div>
+            <div class="fc-trend">↑ +7% vs. Apr 2026</div>
+            <div class="fc-basis">Based on 4 months of history</div>
+          </div>
+          <div class="forecast-card">
+            <div class="fc-month">Jun 2026</div>
+            <div class="fc-amount">₹68,900</div>
+            <div class="fc-trend">↑ +7.3% vs. May forecast</div>
+            <div class="fc-basis">Trend: steady upward</div>
+          </div>
+          <div class="forecast-card">
+            <div class="fc-month">Jul 2026</div>
+            <div class="fc-amount">₹71,500</div>
+            <div class="fc-trend">↑ +3.8% vs. Jun forecast</div>
+            <div class="fc-basis">Confidence: moderate</div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#9ca3af;margin-top:-8px;">
+          ⚠ Forecast shown when ≥ 3 months of paid invoice history exists.
+          Insufficient history message shown otherwise.
+        </p>
+      </div>
+
+      <!-- Client Risk Summary -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Client Risk Distribution</span>
+        </div>
+        <div class="risk-summary">
+          <div class="risk-card low">
+            <div class="rc-count">8</div>
+            <div class="rc-label">Low Risk (score ≥ 70)</div>
+          </div>
+          <div class="risk-card med">
+            <div class="rc-count">5</div>
+            <div class="rc-label">Medium Risk (score 40–69)</div>
+          </div>
+          <div class="risk-card hi">
+            <div class="rc-count">3</div>
+            <div class="rc-label">High Risk (score &lt; 40)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Client Payment Scoring Table -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Client Payment Scores</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select style="font-size:12px;padding:4px 8px;width:auto;">
+              <option>All Clients</option>
+              <option>Low Risk only</option>
+              <option>Medium Risk only</option>
+              <option>High Risk only</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Payment Score</th>
+                <th>Risk</th>
+                <th>Invoices</th>
+                <th>Avg Days to Pay</th>
+                <th>On-time Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr onclick="filterAndGo('paid')">
+                <td class="client">Singh &amp; Sons</td>
+                <td>
+                  <div class="score-bar-wrap">
+                    <div class="score-bar"><div class="score-fill high-score" style="width:88%"></div></div>
+                    <span class="score-num" style="color:#10b981">88</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-low">Low Risk</span></td>
+                <td>14</td>
+                <td>18 days</td>
+                <td>93%</td>
+              </tr>
+              <tr onclick="filterAndGo('paid')">
+                <td class="client">Nair Tech</td>
+                <td>
+                  <div class="score-bar-wrap">
+                    <div class="score-bar"><div class="score-fill high-score" style="width:74%"></div></div>
+                    <span class="score-num" style="color:#10b981">74</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-low">Low Risk</span></td>
+                <td>11</td>
+                <td>22 days</td>
+                <td>82%</td>
+              </tr>
+              <tr onclick="filterAndGo('pending')">
+                <td class="client">Mehta Traders</td>
+                <td>
+                  <div class="score-bar-wrap">
+                    <div class="score-bar"><div class="score-fill mid-score" style="width:61%"></div></div>
+                    <span class="score-num" style="color:#f59e0b">61</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-medium">Medium Risk</span></td>
+                <td>9</td>
+                <td>34 days</td>
+                <td>67%</td>
+              </tr>
+              <tr onclick="filterAndGo('overdue')">
+                <td class="client">Reddy Exports</td>
+                <td>
+                  <div class="score-bar-wrap">
+                    <div class="score-bar"><div class="score-fill low-score" style="width:28%"></div></div>
+                    <span class="score-num" style="color:#ef4444">28</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-high">High Risk</span></td>
+                <td>7</td>
+                <td>52 days</td>
+                <td>29%</td>
+              </tr>
+              <tr>
+                <td class="client">Kapoor Fabrics</td>
+                <td>
+                  <div class="score-bar-wrap">
+                    <div class="score-bar"><div class="score-fill mid-score" style="width:53%"></div></div>
+                    <span class="score-num" style="color:#f59e0b">53</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-medium">Medium Risk</span></td>
+                <td>6</td>
+                <td>38 days</td>
+                <td>50%</td>
+              </tr>
+              <tr>
+                <td class="client">Sharma Distributors</td>
+                <td colspan="5" style="color:#9ca3af;font-style:italic;font-size:13px;">
+                  No data — client has no invoice history
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Interaction Table -->
+      <div class="interaction-section">
+        <h3>Screen 5 — AI Insights · Interaction Table</h3>
+        <table class="interaction-table">
+          <thead>
+            <tr><th>Trigger</th><th>Element</th><th>Action / Behaviour</th><th>Outcome</th><th>Condition</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="trigger">Page Load</td>
+              <td>AI Insights page</td>
+              <td class="action-desc">Execute 3 MongoDB aggregation pipelines: (1) payment scores per client, (2) risk classification, (3) 3-month revenue forecast</td>
+              <td class="outcome">All widgets populated; page renders within 3 seconds for ≤10,000 invoices</td>
+              <td class="condition">User authenticated; invoice data exists</td>
+            </tr>
+            <tr>
+              <td class="trigger">Page Load (insufficient history)</td>
+              <td>Revenue Forecast section</td>
+              <td class="action-desc">Detect < 3 months of paid history; replace forecast cards with informational message</td>
+              <td class="outcome">"Insufficient history — at least 3 months of paid invoices needed to generate a forecast."</td>
+              <td class="condition">Paid invoice history spans < 3 distinct calendar months</td>
+            </tr>
+            <tr>
+              <td class="trigger">Page Load (pipeline error)</td>
+              <td>Any insight widget</td>
+              <td class="action-desc">Catch aggregation pipeline timeout or error; display degraded-mode banner for affected widget</td>
+              <td class="outcome">Widget shows: "Insights temporarily unavailable. Try refreshing." Other widgets unaffected.</td>
+              <td class="condition">Aggregation pipeline returns error or times out</td>
+            </tr>
+            <tr>
+              <td class="trigger">Hover</td>
+              <td>Forecast card</td>
+              <td class="action-desc">Show tooltip with calculation basis: months used, weighting method, confidence note</td>
+              <td class="outcome">Tooltip appears above card with methodology summary</td>
+              <td class="condition">Forecast data available</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>Client row in scoring table</td>
+              <td class="action-desc">Navigate to Invoice List filtered by that client's name</td>
+              <td class="outcome">Invoice List loads showing only that client's invoices</td>
+              <td class="condition">Client has ≥ 1 invoice (not "No data" row)</td>
+            </tr>
+            <tr>
+              <td class="trigger">Click</td>
+              <td>Risk distribution card (Low / Medium / High)</td>
+              <td class="action-desc">Filter client scoring table to show only clients in that risk tier</td>
+              <td class="outcome">Table rows filtered; active risk card highlighted</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Change</td>
+              <td>Risk filter dropdown (All / Low / Medium / High)</td>
+              <td class="action-desc">Filter client scoring table by selected risk level</td>
+              <td class="outcome">Table updates to show matching clients only</td>
+              <td class="condition">Always</td>
+            </tr>
+            <tr>
+              <td class="trigger">Display</td>
+              <td>Client with no invoice history</td>
+              <td class="action-desc">Show "No data" in score and risk columns instead of score = 0 or empty</td>
+              <td class="outcome">"No data — client has no invoice history" displayed in row</td>
+              <td class="condition">Client exists in DB but has zero invoices</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const titles = {
+    dashboard: 'Dashboard',
+    invoices:  'Invoices',
+    create:    'New Invoice',
+    detail:    'Invoice Detail — INV-0053',
+    insights:  'AI Insights'
+  };
+
+  function showPage(id, navEl) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+    if (navEl) navEl.classList.add('active');
+    document.getElementById('topbar-title').textContent = titles[id] || id;
+    window.scrollTo(0, 0);
+  }
+
+  function filterAndGo(status) {
+    showPage('invoices', document.getElementById('nav-invoices'));
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    const map = { all:'All', paid:'Paid', pending:'Pending', overdue:'Overdue', draft:'Draft' };
+    document.querySelectorAll('.filter-tab').forEach(t => {
+      if (t.textContent.trim().startsWith(map[status] || 'All')) t.classList.add('active');
+    });
+  }
+
+  function setFilter(status, el) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function removeRow(btn) {
+    const tbody = document.getElementById('line-items-body');
+    if (tbody.rows.length > 1) {
+      btn.closest('tr').remove();
+      recalc();
+    } else {
+      alert('At least one line item is required.');
+    }
+  }
+
+  function recalc() {
+    let sub = 0;
+    document.querySelectorAll('#line-items-body tr').forEach(row => {
+      const inputs = row.querySelectorAll('input[type=number]');
+      if (inputs.length >= 2) {
+        const qty = parseFloat(inputs[0].value) || 0;
+        const price = parseFloat(inputs[1].value) || 0;
+        const total = qty * price;
+        sub += total;
+        const totInput = row.querySelectorAll('input')[2];
+        if (totInput) totInput.value = '₹' + total.toLocaleString('en-IN');
+      }
+    });
+    const gst = sub * 0.18;
+    const grand = sub + gst;
+    document.getElementById('subtotal').textContent    = '₹' + Math.round(sub).toLocaleString('en-IN');
+    document.getElementById('gst-amount').textContent  = '₹' + Math.round(gst).toLocaleString('en-IN');
+    document.getElementById('grand-total').textContent = '₹' + Math.round(grand).toLocaleString('en-IN');
+  }
+</script>
+</body>
+</html>
