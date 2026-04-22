@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Spec-Driven Development keynote — from a business idea to a validated MongoDB application in 45 minutes using GitHub's spec-kit and Claude Code. PeerIslands at MongoDB AI Conference 2026.">
+<title>PeerIslands · Spec-Driven Development — MongoDB Conference 2026</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231B8A7A'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EPi%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--pi-dark:#0B3D3B;--pi-mid:#145C54;--pi-teal:#1B8A7A;--pi-light:#2AA89A;--pi-mint:#6ee7b7;--pi-bg:#FAFCFB;--pi-card:#fff;--pi-border:#e2ebe5;--text:#13201f;--text-m:#3a4a44;--text-l:#6a7a72;--mongo:#00684A}
+body{font-family:'Playfair Display',Georgia,serif;background:var(--pi-bg);color:var(--text);line-height:1.6}
+.sans{font-family:'Inter',system-ui,sans-serif}
+.mono{font-family:'JetBrains Mono','Consolas',monospace}
+header{background:linear-gradient(135deg,var(--pi-dark) 0%,var(--pi-mid) 40%,var(--pi-teal) 100%);padding:40px 0 52px;position:relative;overflow:hidden}
+header::before{content:'';position:absolute;inset:0;opacity:.05;background-image:repeating-linear-gradient(45deg,transparent,transparent 40px,#fff 40px,#fff 41px)}
+.wrap{max-width:960px;margin:0 auto;padding:0 32px;position:relative}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;gap:20px;flex-wrap:wrap}
+.logo{height:44px;border-radius:4px;background:#fff;padding:8px 14px;font-family:'Inter',sans-serif;font-weight:700;color:var(--pi-dark);display:inline-flex;align-items:center;letter-spacing:.3px;font-size:16px}
+.logo span{color:var(--pi-teal);margin-right:6px;font-weight:700}
+.hdr-meta{text-align:right;font-size:11px;color:rgba(255,255,255,.7);font-family:'Inter',sans-serif;letter-spacing:.6px;line-height:1.7}
+.hdr-meta b{color:#fff;font-weight:700}
+h1{font-size:42px;font-weight:400;color:#fff;line-height:1.15;letter-spacing:-.5px}
+h1 strong{font-weight:700}
+.hdr-sub{font-size:16px;color:rgba(255,255,255,.82);font-family:'Inter',sans-serif;margin-top:14px;max-width:620px;line-height:1.55}
+.pills{margin-top:24px;display:flex;gap:10px;flex-wrap:wrap}
+.pill{font-size:11px;padding:5px 14px;border-radius:20px;background:rgba(255,255,255,.14);color:#fff;font-family:'Inter',sans-serif;letter-spacing:.5px;font-weight:600}
+.pill.pill-mongo{background:var(--mongo);color:#fff}
+.presenter{margin-top:22px;padding:12px 16px;background:rgba(255,255,255,.08);border-left:3px solid var(--pi-mint);border-radius:0 6px 6px 0;font-family:'Inter',sans-serif;font-size:13px;color:rgba(255,255,255,.92);max-width:620px}
+.presenter b{color:#fff;font-weight:700}
+.presenter span{color:rgba(255,255,255,.6);display:block;font-size:11.5px;margin-top:3px;letter-spacing:.3px}
+.shell{max-width:1240px;margin:0 auto;padding:32px 32px 56px;display:flex;gap:32px;align-items:flex-start}
+.sidebar{width:240px;flex-shrink:0;position:sticky;top:16px;align-self:flex-start;max-height:calc(100vh - 32px);overflow-y:auto;background:#fff;border:1px solid var(--pi-border);border-radius:10px;padding:18px 0 20px;box-shadow:0 2px 8px rgba(11,61,59,.04);scrollbar-width:thin}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--pi-border);border-radius:3px}
+.sidebar-title{font-size:10.5px;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--pi-dark);padding:0 18px 12px;border-bottom:1px solid var(--pi-border);margin-bottom:8px}
+.sidebar-group{font-size:9.5px;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-l);padding:12px 18px 4px}
+.sidebar-group:first-of-type{padding-top:2px}
+.nav-btn{display:block;width:100%;text-align:left;padding:7px 16px 7px 16px;border:0;border-left:3px solid transparent;background:transparent;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;font-weight:500;color:var(--text-m);transition:background .15s,color .15s,border-color .15s;white-space:normal;line-height:1.4;margin-bottom:1px}
+.nav-btn:hover{background:#f0faf5;color:var(--pi-teal)}
+.nav-btn.active{background:linear-gradient(90deg,#e6f5ee,rgba(230,245,238,0));color:var(--pi-teal);border-left-color:var(--pi-teal);font-weight:700}
+.content{flex:1;min-width:0}
+.primer{margin-bottom:44px}
+.section-eyebrow{font-size:11.5px;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--pi-teal);margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--pi-teal)}
+.primer h2,.overview h2,.cmds h2,.compare h2,.metrics h2,.gotchas h2{font-size:22px;color:var(--pi-dark);font-weight:600;margin-bottom:4px;font-family:'Playfair Display',serif}
+.section-sub{font-size:14px;color:var(--text-m);font-family:'Inter',sans-serif;margin-bottom:22px;max-width:720px;line-height:1.6}
+.primer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:28px}
+.primer-card{background:#fff;border:1px solid var(--pi-border);border-radius:10px;padding:18px 18px 16px;transition:transform .2s,box-shadow .2s,border-color .2s}
+.primer-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(11,61,59,.08);border-color:var(--pi-light)}
+.primer-icon{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--pi-teal),var(--pi-light));color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:10px;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:.5px}
+.primer-title{font-size:13.5px;font-family:'Inter',sans-serif;font-weight:700;color:var(--pi-dark);margin-bottom:4px;letter-spacing:.2px}
+.primer-desc{font-size:12.5px;color:var(--text-m);font-family:'Inter',sans-serif;line-height:1.55}
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.tool{padding:14px 16px;border-radius:10px;border:1px solid var(--pi-border);background:#fff}
+.tool b{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--pi-dark);letter-spacing:.3px;display:block;margin-bottom:4px;text-transform:uppercase}
+.tool span{font-size:12.5px;font-family:'Inter',sans-serif;color:var(--text-m);line-height:1.5;display:block}
+.tool.tool-mongo{border-color:var(--mongo);background:linear-gradient(135deg,#fff,#f0fbf6)}
+.tool.tool-mongo b{color:var(--mongo)}
+.cmds{margin-bottom:48px}
+/* Animated demo-flow diagram (CSS-only, GIF-like) */
+.flow-wrap{margin-top:18px;padding:22px 18px;background:linear-gradient(135deg,#f0faf5 0%,#e8f5ef 100%);border:1px solid var(--pi-border);border-radius:10px;overflow-x:auto}
+.flow-label{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--pi-teal);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;text-align:center}
+.flow-row{display:flex;align-items:center;gap:6px;min-width:720px;justify-content:center}
+.flow-node{flex:0 0 auto;width:122px;text-align:center;padding:12px 6px 10px;border-radius:10px;background:#fff;border:1.5px solid var(--pi-border);transition:transform .4s,box-shadow .4s,background .4s,border-color .4s;animation:flowPulse 5s infinite;animation-delay:var(--d,0s)}
+.flow-icon{font-size:22px;line-height:1;margin-bottom:6px;transition:transform .4s}
+.flow-label-top{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--pi-dark);letter-spacing:.3px;margin-bottom:3px}
+.flow-cmd{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-m);word-break:break-all}
+.flow-arrow{flex:0 0 auto;width:22px;height:2px;background:var(--pi-border);position:relative;animation:flowArrow 5s infinite;animation-delay:var(--d,0s)}
+.flow-arrow::after{content:'';position:absolute;right:-1px;top:-4px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--pi-border);transition:border-left-color .4s}
+.flow-reset{margin-top:14px;text-align:center;font-family:'Inter',sans-serif;font-size:12px;color:var(--text-m);padding-top:10px;border-top:1px dashed var(--pi-border)}
+.flow-reset code{font-family:'JetBrains Mono',monospace;color:var(--pi-dark);background:#fff;padding:2px 6px;border-radius:3px;border:1px solid var(--pi-border)}
+.flow-reset b{color:var(--pi-teal)}
+@keyframes flowPulse{
+  0%,9%{background:var(--pi-teal);border-color:var(--pi-teal);color:#fff;transform:translateY(-3px);box-shadow:0 8px 20px rgba(27,138,122,.35)}
+  14%,100%{background:#fff;border-color:var(--pi-border);color:var(--pi-dark);transform:translateY(0);box-shadow:none}
+}
+.flow-node[style*="--d:0s"] .flow-cmd,.flow-node .flow-cmd{transition:color .4s}
+@keyframes flowArrow{
+  0%,4%{background:var(--pi-border)}
+  8%,13%{background:var(--pi-teal)}
+  18%,100%{background:var(--pi-border)}
+}
+.flow-arrow[style*="--d:"]{position:relative}
+@media(prefers-reduced-motion:reduce){
+  .flow-node,.flow-arrow{animation:none}
+}
+.cmd-row{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:6px}
+.cmd-row:nth-child(even){background:#f4f8f5}
+.cmd-num{width:22px;height:22px;border-radius:50%;background:var(--pi-teal);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;flex-shrink:0}
+.cmd-code{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--pi-dark);font-weight:600;min-width:290px}
+.cmd-desc{font-size:13px;color:var(--text-m);font-family:'Inter',sans-serif}
+.act{margin-bottom:40px}
+.act-hdr{display:flex;align-items:flex-start;gap:16px;margin-bottom:14px;cursor:pointer}
+.act-icon{width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;margin-top:2px}
+.act-label{font-size:11px;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.act-time{font-size:11px;font-family:'Inter',sans-serif;color:var(--text-l);margin-left:8px}
+.act-badge{font-size:10px;padding:2px 8px;border-radius:4px;font-family:'Inter',sans-serif;font-weight:600;margin-left:8px}
+.act-title{font-size:23px;font-weight:600;margin-top:4px;color:var(--pi-dark)}
+.act-body{margin-left:66px}
+.act-desc{font-size:15px;line-height:1.65;color:var(--text-m);margin-bottom:16px}
+.cmd-label{font-size:10.5px;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-l);margin-bottom:6px}
+.cmd-block{background:#0B2E2C;border-radius:8px;padding:12px 16px;margin-bottom:6px;cursor:pointer;position:relative;border:1px solid #1a4a46;transition:border-color .2s}
+.cmd-block:hover{border-color:var(--pi-mint)}
+.cmd-block code{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--pi-mint);line-height:1.55;word-break:break-all}
+.cmd-copy{position:absolute;top:8px;right:10px;font-size:10px;color:#4a7a72;font-family:'Inter',sans-serif}
+.cmd-block:hover .cmd-copy{color:var(--pi-mint)}
+.demo-box{background:#f0faf5;border-radius:8px;padding:14px 18px;margin-bottom:16px;border-left:3px solid var(--pi-light)}
+.demo-label{font-size:10.5px;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--pi-teal);margin-bottom:8px}
+.demo-step{font-size:13.5px;color:#233a32;font-family:'Inter',sans-serif;padding:3px 0;display:flex;gap:8px}
+.demo-step b{color:var(--pi-teal);min-width:16px}
+.principles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:6px 0 18px;padding:16px 18px;background:#f7fbf9;border-radius:8px;border:1px solid var(--pi-border)}
+.principle{display:flex;gap:10px;align-items:flex-start}
+.principle-num{width:22px;height:22px;border-radius:50%;background:var(--pi-teal);color:#fff;font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;flex-shrink:0;margin-top:1px}
+.principle-txt{font-size:12.5px;font-family:'Inter',sans-serif;color:var(--text);line-height:1.45}
+.principle-txt b{color:var(--pi-dark);font-weight:700}
+.mongo-block{background:linear-gradient(135deg,#fff,#f0fbf6);border:1px solid rgba(0,104,74,.25);border-left:3px solid var(--mongo);border-radius:8px;padding:16px 18px;margin-bottom:16px}
+.mongo-label{font-size:10.5px;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mongo);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.mongo-label::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--mongo);display:inline-block}
+.mongo-code{background:#0B2E2C;border-radius:6px;padding:12px 14px;margin-top:4px}
+.mongo-code pre{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#9fe6c9;line-height:1.55;white-space:pre;overflow-x:auto;margin:0}
+.mongo-note{font-size:12.5px;font-family:'Inter',sans-serif;color:var(--text-m);margin-top:10px;line-height:1.55}
+.mongo-note b{color:var(--mongo);font-weight:700}
+.narration{border-left:2px solid #d8e2da;padding-left:16px;margin-bottom:12px}
+.narration p{font-size:14px;font-style:italic;color:var(--text-m);line-height:1.6}
+.deliverable{display:flex;align-items:center;gap:8px;font-size:13.5px;font-family:'Inter',sans-serif}
+.deliverable span:first-child{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.fallback{margin-top:12px;padding:10px 14px;background:#fef6e6;border-left:3px solid #e5a532;border-radius:0 6px 6px 0;font-size:12.5px;font-family:'Inter',sans-serif;color:#6b4c10;line-height:1.5}
+.fallback b{color:#8a5d0c;font-weight:700}
+.compare,.metrics,.gotchas{margin-bottom:44px}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.compare-col{border-radius:10px;padding:20px 22px;border:1px solid var(--pi-border)}
+.compare-col.before{background:linear-gradient(135deg,#fff7f5,#fff);border-color:#f0d0c5}
+.compare-col.after{background:linear-gradient(135deg,#f0faf5,#fff);border-color:var(--pi-light)}
+.compare-head{font-size:12px;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.compare-col.before .compare-head{color:#b65030}
+.compare-col.after .compare-head{color:var(--pi-teal)}
+.compare-item{font-size:13px;font-family:'Inter',sans-serif;color:var(--text-m);padding:7px 0;border-bottom:1px dashed rgba(0,0,0,.08);line-height:1.5;display:flex;gap:8px}
+.compare-item:last-child{border-bottom:0}
+.compare-item::before{content:'';width:6px;height:6px;border-radius:50%;margin-top:7px;flex-shrink:0}
+.compare-col.before .compare-item::before{background:#c56a4a}
+.compare-col.after .compare-item::before{background:var(--pi-teal)}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.metric{background:linear-gradient(135deg,var(--pi-dark),var(--pi-mid));border-radius:10px;padding:22px 22px 20px;color:#fff;position:relative;overflow:hidden}
+.metric::after{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:rgba(110,231,183,.12)}
+.metric-value{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--pi-mint);line-height:1;margin-bottom:6px;letter-spacing:-.5px}
+.metric-label{font-size:11.5px;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#fff;margin-bottom:4px}
+.metric-sub{font-size:12px;font-family:'Inter',sans-serif;color:rgba(255,255,255,.7);line-height:1.5}
+.gotcha-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.gotcha{background:#fff;border:1px solid var(--pi-border);border-left:3px solid #e5a532;border-radius:8px;padding:14px 16px}
+.gotcha b{font-family:'Inter',sans-serif;font-size:12.5px;color:#8a5d0c;font-weight:700;display:block;margin-bottom:4px}
+.gotcha p{font-size:12.5px;font-family:'Inter',sans-serif;color:var(--text-m);line-height:1.55}
+.closing{margin-bottom:36px;background:linear-gradient(135deg,var(--pi-dark),var(--pi-teal));border-radius:12px;padding:36px 40px;color:#fff}
+.closing h2{font-size:22px;font-weight:600;margin-bottom:16px;font-family:'Playfair Display',serif}
+.closing-item{display:flex;gap:10px;margin-bottom:10px;font-size:14.5px;font-family:'Inter',sans-serif;line-height:1.6}
+.closing-item b{color:var(--pi-mint);min-width:18px}
+.cta{margin-bottom:24px;background:#fff;border:2px solid var(--pi-teal);border-radius:12px;padding:28px 32px;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center}
+.cta-left h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--pi-dark);font-weight:600;margin-bottom:8px}
+.cta-left p{font-size:13.5px;font-family:'Inter',sans-serif;color:var(--text-m);line-height:1.6;margin-bottom:14px;max-width:480px}
+.cta-links{display:flex;flex-direction:column;gap:8px}
+.cta-link{display:flex;gap:10px;font-size:13px;font-family:'Inter',sans-serif;color:var(--pi-dark);align-items:center}
+.cta-link b{font-weight:700;min-width:92px;color:var(--pi-teal);text-transform:uppercase;letter-spacing:.5px;font-size:11px}
+.cta-link span{font-family:'JetBrains Mono',monospace;color:var(--text)}
+.cta-qr{width:140px;height:140px;background:#fff;border:2px solid var(--pi-dark);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;text-align:center}
+.cta-qr svg{width:100%;height:86px}
+.cta-qr small{font-size:9.5px;font-family:'Inter',sans-serif;font-weight:700;color:var(--pi-dark);letter-spacing:.5px;margin-top:4px;text-transform:uppercase}
+.footer-line{text-align:center;font-size:11.5px;font-family:'Inter',sans-serif;color:var(--text-l);padding:14px 0 4px;letter-spacing:.3px}
+.footer-line b{color:var(--pi-dark);font-weight:700}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--pi-dark);color:var(--pi-mint);padding:10px 20px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100}
+.toast.show{opacity:1}
+.primer,.overview,.cmds,.act,.compare,.metrics,.gotchas,.closing,.cta{scroll-margin-top:20px}
+.overview{background:linear-gradient(135deg,#ffffff 0%,#f0faf5 55%,#e3f5ed 100%);border-radius:12px;padding:32px 36px;margin-bottom:48px;border:1px solid var(--pi-border)}
+.sdd-flow{position:relative;padding:8px 0 12px;overflow-x:auto}
+.sdd-stages{display:flex;align-items:flex-start;justify-content:space-between;gap:4px;min-width:780px}
+.sdd-stage{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1 1 0;min-width:94px;cursor:pointer;position:relative;padding:6px 4px;border-radius:8px;transition:background .2s}
+.sdd-stage:hover{background:rgba(27,138,122,.06)}
+.sdd-stage:hover .sdd-node{transform:scale(1.08);box-shadow:0 6px 22px rgba(27,138,122,.4);border-color:var(--pi-teal)}
+.sdd-node{width:58px;height:58px;border-radius:50%;background:#fff;border:2px solid var(--pi-border);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--pi-teal);box-shadow:0 2px 8px rgba(11,61,59,.08);transition:transform .25s,box-shadow .25s,border-color .25s;animation:sddWave 7s ease-in-out infinite;animation-delay:calc(var(--i) * 1s)}
+.sdd-label{margin-top:10px;font-size:11px;font-family:'Inter',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--pi-dark);line-height:1.3}
+.sdd-cap{font-size:10.5px;color:var(--text-l);font-family:'Inter',sans-serif;margin-top:3px;max-width:104px;line-height:1.4}
+.sdd-arrow{color:var(--pi-teal);font-size:20px;margin-top:20px;opacity:.35;animation:sddArrowWave 7s ease-in-out infinite;animation-delay:calc(var(--i) * 1s + .35s);flex-shrink:0}
+.sdd-loop{margin-top:20px;padding-top:16px;border-top:1px dashed var(--pi-border);text-align:center;font-size:12.5px;color:var(--text-m);font-family:'Inter',sans-serif;font-style:italic}
+.sdd-loop b{color:var(--pi-teal);font-style:normal;font-weight:700}
+@keyframes sddWave{0%,16%,100%{transform:scale(1);box-shadow:0 2px 8px rgba(11,61,59,.08);border-color:var(--pi-border);background:#fff;color:var(--pi-teal)}6%{transform:scale(1.18);box-shadow:0 8px 28px rgba(27,138,122,.55);border-color:var(--pi-teal);background:linear-gradient(135deg,#d6f5e8,#fff);color:var(--pi-dark)}}
+@keyframes sddArrowWave{0%,16%,100%{opacity:.3;color:var(--pi-teal);transform:translateX(0)}6%{opacity:1;color:var(--pi-light);transform:translateX(5px)}}
+@media(max-width:900px){.shell{flex-direction:column;padding:20px 20px 40px;gap:16px}.sidebar{position:static;width:100%;max-height:none;overflow-y:visible}.sidebar-inner{display:flex;flex-wrap:wrap;gap:4px;padding:4px}.sidebar-title{display:none}.sidebar-group{display:none}.nav-btn{width:auto;padding:6px 12px;border-left:0;border-bottom:2px solid transparent;border-radius:4px;font-size:12px}.nav-btn.active{border-left-color:transparent;border-bottom-color:var(--pi-teal);background:#e6f5ee}}
+@media(max-width:760px){h1{font-size:30px}.wrap{padding:0 18px}.act-body{margin-left:0;margin-top:12px}.cmd-code{min-width:auto}.overview{padding:24px 20px}.compare-grid{grid-template-columns:1fr}.cta{grid-template-columns:1fr;text-align:center}.cta-qr{justify-self:center}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="hdr-top">
+      <!--<div class="logo"><span>&#9670;</span>PeerIslands</div>-->
+      <img src="https://testrigor.com/wp-content/uploads/2025/03/peerislands-partner-logo_2.png" alt="PeerIslands" class="logo">
+      <div class="hdr-meta"><b>MONGODB CONFERENCE 2026</b><br>KEYNOTE SESSION<br>SPEC-DRIVEN DEVELOPMENT</div>
+    </div>
+    <h1>AI-Powered<br><strong>Spec-Driven Development</strong></h1>
+    <div class="pills">
+      <span class="pill">SPEC-KIT</span>
+      <span class="pill">CLAUDE CODE</span>
+      <span class="pill">MONGO DB</span>
+      <span class="pill">LIVE DEMO</span>
+      <span class="pill">PEERISLANDS</span>
+    </div>
+    <div class="presenter sans">
+      <b>Keynote by PeerIslands</b>
+      <span>Enterprise modernisation &middot; AI-native engineering &middot; MongoDB Global Partner</span>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar-title">On this page</div>
+    <div class="sidebar-inner" id="navBar"></div>
+  </aside>
+  <main class="content">
+    <section class="primer" id="primer"></section>
+    <section class="overview" id="overview"></section>
+    <section class="cmds" id="cmdRef"></section>
+    <div id="actsContainer"></div>
+    <section class="compare" id="compare"></section>
+    <section class="metrics" id="metrics"></section>
+    <section class="gotchas" id="gotchas"></section>
+    <section class="closing" id="closingSection"></section>
+    <section class="cta" id="cta"></section>
+    <div class="footer-line sans">&copy; 2026 <b>PeerIslands</b> &middot; Crafted for MongoDB Conference 2026 &middot; spec-kit is an open-source project from GitHub</div>
+  </main>
+</div>
+
+<div class="toast" id="toast">&check; Command copied to clipboard</div>
+
+<script>
+const ACTS=[
+  {num:1,title:"Principles & Standards",time:"0\u20135 min",type:"live",icon:"\u25C6",color:"#2AA89A",commands:[],description:"The journey from Code-Driven Development (CDD) to Test-Driven Development (TDD) to Spec-Driven Development (SDD), the SDD 7-phase workflow, and the 7 Governing Principles that keep a spec honest.",deliverable:"Shared vocabulary: WHY SDD, WHAT it is, and WHICH principles govern it.",narration:"We've all been here. A client sends requirements over email. You start coding. Two weeks later, the UI doesn't match. The root cause? No contract. Today we fix that.",demoSteps:[],principles:[{t:"Spec is the source of truth",d:"Not the Jira ticket, not the code comment \u2014 the spec."},{t:"Spec before code",d:"Write the contract first; the code is a compilation target."},{t:"Human-reviewable specs",d:"A BA must be able to read and sign off \u2014 no ceremony-ese."},{t:"Layered hierarchy",d:"Constitution \u2192 Spec \u2192 Plan \u2192 Tasks. Each layer cites the one above."},{t:"Minimal specification",d:"Specify WHAT, not HOW. Leave room for the implementer."},{t:"Continuous validation",d:"Every iteration cross-checks code against spec."},{t:"MongoDB-first data modeling",d:"Document shape is declared with the spec, not emergent from code."}]},
+  {num:2,title:"Generate Specification",time:"5\u201310 min",type:"live",icon:"\u25C7",color:"#0B7D6E",commands:[
+    "/speckit.constitution Create principles for SmartInvoice \u2014 an AI-powered invoice manager for small businesses in India, built on MongoDB as the system of record. Focus on: spec is source of truth, spec before code, human-reviewable specs, layered hierarchy, minimal specification, continuous validation, MongoDB-first data modeling.",
+    "/speckit.specify Build SmartInvoice with 3 use cases: (1) Invoice Management \u2014 create, track, auto-calc 18% GST, sequential INV-XXXX numbering, lifecycle draft\u2192pending\u2192paid/overdue, persisted in MongoDB. (2) Dashboard \u2014 real-time stats, monthly revenue chart, recent invoices sourced from MongoDB aggregations. (3) AI Insights \u2014 client payment scoring, risk classification, 3-month revenue forecast driven by MongoDB aggregation pipelines.",
+    "/speckit.clarify"
+  ],description:"Transform a vague business idea into structured, numbered, traceable requirements. Then resolve ambiguities through targeted questions \u2014 before a single line of code is written.",deliverable:"constitution.md + spec.md with numbered requirements (BR-1.1, BR-1.2, ...)",narration:"Notice spec-kit asks QUESTIONS, not assumptions. These ambiguities would have been bugs in a code-first approach. Every requirement now has a traceable ID.",demoSteps:["Run /speckit.constitution \u2014 show the 7 principles embedded","Run /speckit.specify \u2014 scroll the numbered requirements (BR-1.1 \u2026 BR-3.N)","Run /speckit.clarify \u2014 read aloud the first ambiguity it surfaces","Answer the clarifying question; show how the spec updates in place"]},
+  {num:3,title:"Design & Clarify",time:"10\u201317 min",type:"live",icon:"\u25B3",color:"#1B9AAA",commands:[
+    "IMPORTANT:Based on the spec, create a prototype with HTML wireframes for 5 screens: Dashboard, Invoice List, Create Invoice, Invoice Detail, AI Insights. Include interaction tables for each screen.",
+    "/speckit.clarify"
+  ],description:"Generate screen wireframes, get BA feedback, iterate. Three rounds produce production-ready UI contracts \u2014 without writing a single React component.",deliverable:"Updated spec.md with HTML wireframes + interaction tables for all 5 screens",narration:"Three iterations. Each one took seconds. Changing a wireframe is free. Changing a React component costs hours. This is the cheapest phase to catch mistakes.",demoSteps:["Generate wireframes \u2014 open the Dashboard preview","Request a change: \u201CMove AI Insights to a tab inside Dashboard\u201D","Re-run, show the diff, confirm layout","Third pass: tighten the interaction table for Create Invoice"]},
+  {num:4,title:"Platform Spec & Plan",time:"17\u201322 min",type:"live",icon:"\u25A1",color:"#3D5A80",commands:[
+    "/speckit.plan Project layout: backend/ (Node 20 + Express 4, entry server.js, port 4000, CORS allow http://localhost:3000) and frontend/ (Create React App, set proxy http://localhost:4000 in package.json). React hooks, dark + light themes with a theme-toggle button fixed in the top-right corner of every screen (including login and first-run setup); the selected theme MUST persist across sessions via localStorage under key `smartinvoice.theme`; MongoDB green (#00684A) accent in both themes. MongoDB via official Node.js driver (no Mongoose), collections: invoices, clients, counters. Sequential INV-XXXX via counters.findOneAndUpdate(). All amounts stored as integer paise \u2014 no floats. Business logic: calcLineTotal = qty \u00D7 unitPricePaise, calcSubtotal = \u03A3(lineTotals), calcTax = Math.floor(subtotal \u00D7 18 / 100), calcGrandTotal = subtotal + tax. \u20B9 INR display (paise / 100 for rendering). 8 REST endpoints: GET /api/dashboard (one $facet aggregation for stats + chart + recent invoices), GET /api/invoices, POST /api/invoices, GET /api/invoices/:id, PATCH /api/invoices/:id/status, POST /api/invoices/:id/payments, GET /api/invoices/:id/pdf (PDFKit, GST Rule 46 layout), GET /api/insights (aggregation pipelines: per-client payment score 0\u2013100 + 3-month SMA revenue forecast). Idempotent seed on startup: insert 4 clients + 8 invoices only when invoices collection is empty. Externalize MONGODB_URI, DB_NAME, COLL_INVOICES, COLL_CLIENTS, COLL_COUNTERS in .env loaded via dotenv \u2014 no hard-coded URIs or collection names in source. Commit .env.example; .env in .gitignore. Plan must include final startup tasks: npm install and start backend (background process, port 4000) then npm install and start frontend dev server (background process, port 3000) \u2014 app running at http://localhost:3000 by end of /speckit.implement. Jest test suite: every calculation formula, every validation rule, every endpoint \u2014 \u2265 90% line coverage, enforced in CI."
+  ],description:"Define shared infrastructure \u2014 tech stack, MongoDB collections and indexes, externalized config, API contracts, business logic formulas, validation rules, and design tokens (including dark + light themes with a top-right toggle persisted to localStorage). One plan, one truth.",deliverable:"plan.md with MongoDB data model (5 collections: invoices, clients, counters, businesses, users \u2014 each with indexes and a JSON Schema validator), .env configuration contract, 8 API endpoints , 7 validation rules, calculation formulas, Jest test plan, dark/light theme spec with a persisted top-right toggle",narration:"The plan references the spec. Every API endpoint traces to a user story. Every formula is explicit. A new developer reads this ONE file and understands the entire system.",demoSteps:["Open plan.md \u2014 read the Collections section out loud (5 collections)","Show the Indexes table \u2014 partial unique index on (businessId, invoiceNumber)","Show the 8 REST endpoints tied to BR-X.X IDs; PDF is endpoint 3 with Accept: application/pdf","Show the JSON Schema validator for the invoices collection + the sanitizer that bridges it to MongoDB's $jsonSchema dialect"]},
+  {num:5,title:"Tasks & Analysis",time:"22\u201327 min",type:"live",icon:"\u25CB",color:"#4A90D9",commands:["/speckit.tasks","/speckit.analyze"],description:"Break the plan into dependency-ordered, parallelizable tasks. Then cross-check all artifacts \u2014 constitution, spec, plan, tasks \u2014 for consistency before writing any code.",deliverable:"tasks.md (ordered with [P] parallel markers) + cross-artifact consistency report",narration:"Tasks are ordered by dependency. Some can run in parallel. /speckit.analyze confirms everything is consistent BEFORE we write a single line of code.",demoSteps:["Run /speckit.tasks \u2014 show the dependency graph","Highlight [P]-marked tasks that can run in parallel","Run /speckit.analyze \u2014 consistency report across all artifacts","Point out: if the spec drifted, this is where we would catch it"]},
+  {num:6,title:"Implement & Run",time:"27\u201335 min",type:"live",icon:"\u25B7",color:"#00A347",commands:["/speckit.implement"],description:"The moment of truth. spec-kit executes all tasks: scaffolds the project, reads MongoDB connection from .env, builds the data access layer, implements business logic, generates all UI components, emits the auto-generated Jest unit-test suite, and assembles the running application.",deliverable:"Running SmartInvoice application \u2014 live demo in browser, data persisted to MongoDB, Jest suite green (150+ tests across unit, integration, perf)",narration:"Watch the task list. Each task references the spec. The data model matches what we defined. The formulas are exactly what we wrote. Nothing improvised. Code AND tests generated FROM specs.",demoSteps:[
+    "Dashboard \u2014 4 stat cards, 12-month revenue chart, recent 5 invoices (all from one $facet aggregation)",
+    "New Invoice \u2014 pick a seeded client, Net-15 due date auto-filled, line items recompute GST live",
+    "Add line items \u2014 totals auto-calculate at 18% GST in integer paise (no floats ever)",
+    "Save & mark pending \u2014 INV-0009 allocated atomically via counters.findOneAndUpdate",
+    "Record payment \u2014 themed modal (no native prompt); partial/full supported; overpayment rejected",
+    "Mark Paid \u2014 status transition logged on the immutable history array; dashboard reflects on next load",
+    "Download PDF \u2014 GST Rule 46 tax-invoice, byte-deterministic, served via content negotiation on endpoint 3",
+    "AI Insights \u2014 per-client 0\u2013100 reliability score, Low/Medium/High band, 3-month forecast (SMA + linear trend) \u2014 all pure MongoDB aggregation pipelines, zero external AI calls"
+  //],aggPipeline:{title:"Monthly revenue chart \u2014 one aggregation, one round-trip",why:"No ORM, no N+1, no cached denormalisation. One $dateTrunc-bucketed pipeline, index-backed, computed server-side. This is why the Dashboard feels instant on real data.",code:"db.invoices.aggregate([\n  { $match: { status: \"paid\", paidAt: { $ne: null } } },\n  { $group: {\n      _id: { $dateTrunc: { date: \"$paidAt\", unit: \"month\" } },\n      totalRevenue: { $sum: \"$grandTotal\" },\n      invoiceCount: { $sum: 1 },\n      avgTicket:    { $avg: \"$grandTotal\" }\n  }},\n  { $sort:  { _id: 1 } },\n  { $limit: 12 }\n])"},aiNotes:"AI mechanism, unpacked: client autocomplete uses <b>Atlas Search</b>'s autocomplete analyzer on client.name. Payment scoring is an aggregation pipeline computing average days-to-pay and its coefficient of variation per client. The 3-month forecast is a trailing weighted average over $dateTrunc-bucketed revenue. The \u201CAI\u201D wrote the spec-compliant code; the runtime intelligence is pure MongoDB.",fallback:"If /speckit.implement stalls past the 6-minute mark, switch to the pre-recorded build capture (./fallback/build.mp4) and narrate live. A pre-warmed branch main-demo-ready is already seeded with the full SmartInvoice build for immediate cut-over."},
+  ],},
+  {num:7,title:"Validate Against Specs",time:"35\u201345 min",type:"live",icon:"\u2713",color:"#00A347",commands:["/speckit.analyze","/speckit.checklist"],description:"Close the loop. Cross-check the implementation against every spec artifact. Walk each acceptance criterion. Generate the compliance certificate \u2014 and honour the one that fails.",deliverable:"Validation report \u2014 \u224898% compliance (45 of 46 criteria pass) with a traceable failure",narration:"The spec was the contract. Claude Code was the contractor. spec-kit was the process. The validation report is the certificate of compliance. And when a criterion fails, SDD tells us exactly WHERE the drift is. That's Spec-Driven Development.",demoSteps:["Run /speckit.analyze \u2014 consistency across constitution, spec, plan, tasks, code","Run /speckit.checklist \u2014 46 acceptance criteria evaluated","Open the validation report \u2014 pass/fail per BR-X.X ID","Drill into the one failing criterion \u2014 show the spec\u2194code diff","Discuss: the failure is the feature. SDD surfaces drift; that's the point."]}
+];
+const CMDS=[{cmd:"specify init smartinvoice --ai claude",desc:"Bootstrap project with Claude Code"},{cmd:"/speckit.constitution",desc:"Encode governing principles"},{cmd:"/speckit.specify",desc:"Generate structured spec from requirements"},{cmd:"/speckit.clarify",desc:"Ask targeted questions, resolve ambiguities"},{cmd:"/speckit.plan",desc:"Create technical implementation plan"},{cmd:"/speckit.tasks",desc:"Break plan into ordered tasks"},{cmd:"/speckit.implement",desc:"Execute all tasks, build the app"},{cmd:"/speckit.analyze",desc:"Cross-artifact consistency check"},{cmd:"/speckit.checklist",desc:"Acceptance criteria validation"}];
+const SCRIPTS=[
+  {cmd:"./preflight.sh",desc:"Pre-demo environment check — validates Node 20+, npm, MongoDB, Claude Code CLI, and required ports (3000/4000) are free. Run BEFORE the demo.",when:"Before /speckit.implement"},
+  {cmd:"./start-demo.sh",desc:"Boots backend on :4000 and frontend on :3000 as background processes; tails logs to /tmp/smartinvoice-{backend,frontend}.log. Run AFTER /speckit.implement finishes.",when:"After /speckit.implement"},
+  {cmd:"./stop-demo.sh",desc:"Stops both servers gracefully, force-kills anything still holding :3000/:4000. Safe to re-run. Override with BACKEND_PORT=... FRONTEND_PORT=... env vars.",when:"End of demo / cleanup"},
+  {cmd:"./reset-demo.sh",desc:"Stops processes and wipes smartinvoice/ back to a clean slate for a fresh demo run. Pass --bootstrap to auto-run specify init after the wipe.",when:"Between rehearsals / full reset"}
+];
+const OVERVIEW_STAGES=[{num:1,sym:"\u25C6",label:"Principles",cap:"Governing rules"},{num:2,sym:"\u25C7",label:"Specify",cap:"Structured requirements"},{num:3,sym:"\u25B3",label:"Prototype",cap:"Wireframes & clarify"},{num:4,sym:"\u25A1",label:"Plan",cap:"MongoDB data model"},{num:5,sym:"\u25CB",label:"Tasks",cap:"Ordered breakdown"},{num:6,sym:"\u25B7",label:"Build",cap:"Spec\u2192code generation"},{num:7,sym:"\u2713",label:"Validate",cap:"Compliance check"}];
+const PRIMER_TAKEAWAYS=[{i:"01",t:"Specs as contracts",d:"Treat the spec as the signed agreement \u2014 the code is the compilation target, not the source."},{i:"02",t:"Document model first",d:"Declare MongoDB collections, indexes, and validators before any line of code is generated."},{i:"03",t:"Iterate where it's cheap",d:"Change wireframes in seconds instead of components in hours. Catch mistakes early."},{i:"04",t:"Validate on every turn",d:"Cross-check code against spec at every iteration. Drift is surfaced, not buried."}];
+const TOOLS=[{name:"Spec-Driven Development",desc:"A discipline where a human-reviewable spec is the single source of truth \u2014 and code is generated against it, not the other way around.",mongo:false},{name:"spec-kit",desc:"GitHub's open-source toolkit for the SDD lifecycle: constitution, specify, clarify, plan, tasks, implement, analyze, checklist.",mongo:false},{name:"Claude Code",desc:"Anthropic's terminal-native coding agent \u2014 the executor that turns spec-kit artifacts into working code with full file-level control.",mongo:false},{name:"MongoDB",desc:"System of record for SmartInvoice \u2014 document model mirrors the spec; aggregation pipelines power insights; Atlas Search powers autocomplete.",mongo:true}];
+const COMPARE_ITEMS={before:["Requirements live in email threads \u2014 context lost on day 4","UI changes = days of component refactor","\u201CDone\u201D means \u201Cit compiles\u201D","Data model emerges reactively from code","AI hallucinates architecture decisions","New joiner ramps in weeks, reading scattered code"],after:["Numbered, traceable requirements (BR-1.1\u2026) in spec.md","UI changes = seconds in a wireframe iteration","\u201CDone\u201D means \u224898% of acceptance criteria pass","MongoDB collections, indexes, validators declared up front","AI executes a reviewed, signed spec","New joiner reads one plan.md and is productive in hours"]};
+const METRICS=[{v:"Time",l:"Idea \u2192 running app",s:"End-to-end, demoed live on stage"},{v:"\u22487\u00D7",l:"UI iteration speed",s:"Wireframe spec vs component refactor"},{v:"\u224898%",l:"Spec\u2194code compliance",s:"45 of 46 acceptance criteria pass"},{v:"0",l:"Hidden data-model churn",s:"Document shape declared before code"}];
+const GOTCHAS=[{t:"SDD is strongest on greenfield",p:"Retrofitting onto a legacy codebase needs a bridge \u2014 extract the implicit spec first, then iterate. Don't pretend it's free."},{t:"Garbage prompt, garbage spec",p:"Prompts still matter. A vague /speckit.specify input produces a vague spec. The human remains the product thinker."},{t:"Keep the human in the loop",p:"Don't let the AI self-clarify away real ambiguity. /speckit.clarify is a conversation, not a ritual."},{t:"/speckit.implement is not hands-off",p:"Review every generated diff against the spec. SDD surfaces drift \u2014 someone still has to read the report."}];
+
+let activeAct=null;
+function showToast(){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500)}
+function copyText(t){navigator.clipboard.writeText(t);showToast()}
+let navLock=false,navLockTimer=null;
+function scrollToEl(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
+function lockNav(target){navLock=true;setActiveNav(target);clearTimeout(navLockTimer);navLockTimer=setTimeout(()=>{navLock=false;},900);}
+function setActive(n){scrollToEl('act-'+n);lockNav('act-'+n);}
+function jumpToAct(n){scrollToEl('act-'+n);lockNav('act-'+n);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function renderNav(){
+  const nav=document.getElementById('navBar');
+  const intro=[['primer','Introduction'],['overview','Overview'],['cmdRef','Commands']];
+  const outro=[['compare','Before / After'],['metrics','Outcomes'],['gotchas','Tradeoffs'],['closingSection','Takeaways'],['cta','Connect']];
+  const mkBtn=(target,label,extra='')=>`<button class="nav-btn ${extra}" data-nav-target="${target}" onclick="navJump('${target}')">${label}</button>`;
+  const introHtml=intro.map(([id,l])=>mkBtn(id,l)).join('');
+  const actsHtml=ACTS.map(a=>mkBtn('act-'+a.num,`Act-${a.num} &middot; ${a.title}`,activeAct===a.num?'active':'')).join('');
+  const outroHtml=outro.map(([id,l])=>mkBtn(id,l)).join('');
+  nav.innerHTML=`<div class="sidebar-group">Introduction</div>${introHtml}<div class="sidebar-group">The 7 Actions</div>${actsHtml}<div class="sidebar-group">Outcomes</div>${outroHtml}`;
+}
+function navJump(target){scrollToEl(target);lockNav(target);}
+function setActiveNav(target){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('data-nav-target')===target));
+}
+function initScrollSpy(){
+  const ids=['primer','overview','cmdRef',...ACTS.map(a=>'act-'+a.num),'compare','metrics','gotchas','closingSection','cta'];
+  let ticking=false;
+  const onScroll=()=>{
+    if(ticking||navLock)return;ticking=true;
+    requestAnimationFrame(()=>{
+      const y=window.scrollY+120;let current=ids[0];
+      for(const id of ids){const el=document.getElementById(id);if(el&&el.offsetTop<=y)current=id;}
+      setActiveNav(current);ticking=false;
+    });
+  };
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+}
+
+function renderPrimer(){
+  const el=document.getElementById('primer');
+  const take=PRIMER_TAKEAWAYS.map(p=>`<div class="primer-card"><div class="primer-icon sans">${p.i}</div><div class="primer-title">${p.t}</div><div class="primer-desc">${p.d}</div></div>`).join('');
+  const tools=TOOLS.map(t=>`<div class="tool ${t.mongo?'tool-mongo':''}"><b>${t.name}</b><span>${t.desc}</span></div>`).join('');
+  el.innerHTML=`<div class="section-eyebrow sans">What you'll take away in 45 minutes</div>
+  <h2>A discipline, not a demo</h2>
+  <p class="section-sub sans">This keynote walks a real business idea &mdash; SmartInvoice, an invoice manager for Indian Small Businesses &mdash; from a fuzzy prompt to a validated application running with MongoDB. You will see every artifact, every command, and every tradeoff.</p>
+  <div class="primer-grid">${take}</div>
+  <div class="section-eyebrow sans" style="margin-top:6px">The stack in one breath</div>
+  <div class="tools">${tools}</div>`;
+}
+
+function renderOverview(){
+  const el=document.getElementById('overview');
+  if(!el)return;
+  let html='';
+  OVERVIEW_STAGES.forEach((s,i)=>{
+    html+=`<div class="sdd-stage" style="--i:${i}" onclick="jumpToAct(${s.num})" title="Jump to Act-${s.num}"><div class="sdd-node">${s.sym}</div><div class="sdd-label">${s.label}</div><div class="sdd-cap">${s.cap}</div></div>`;
+    if(i<OVERVIEW_STAGES.length-1){html+=`<div class="sdd-arrow" style="--i:${i}">\u2192</div>`}
+  });
+  el.innerHTML=`<div class="section-eyebrow sans">The 7-phase SDD flow</div>
+  <h2>Spec-Driven Development at a Glance</h2>
+  <p class="section-sub sans">From a fuzzy business idea to a validated, running application &mdash; powered by spec-kit, Claude Code, and MongoDB. The animated highlight traces the end-to-end flow; click any stage to jump to that action.</p>
+  <div class="sdd-flow"><div class="sdd-stages">${html}</div></div>
+  <div class="sdd-loop">The flow <b>loops back</b> &mdash; every validation round feeds the next iteration of the spec. That is how SDD stays a living contract.</div>`;
+}
+
+function renderCmds(){
+  const el=document.getElementById('cmdRef');
+  const cmdsRows=CMDS.map((c,i)=>`<div class="cmd-row"><span class="cmd-num">${i+1}</span><span class="cmd-code">${c.cmd}</span><span class="cmd-desc sans">${c.desc}</span></div>`).join('');
+  const scriptsRows=SCRIPTS.map((s,i)=>`<div class="cmd-row"><span class="cmd-num" style="background:var(--pi-dark)">${i+1}</span><span class="cmd-code">${s.cmd}</span><span class="cmd-desc sans"><b>${s.when}</b> &mdash; ${s.desc}</span></div>`).join('');
+  el.innerHTML=`<div class="section-eyebrow sans">Helper shell scripts</div>
+  <h2>4 Scripts, Demo Lifecycle</h2>
+  <p class="section-sub sans">These terminal helpers sit <b>outside</b> Claude Code and bracket the live demo: validate the machine, boot the running app, tear it down, and reset to a clean slate between rehearsals. All four live at the repo root and are committed to the demo repo.</p>
+  ${scriptsRows}
+  <div class="flow-wrap" aria-label="Typical demo flow from preflight through stop">
+    <div class="flow-label">Typical Flow</div>
+    <div class="flow-row">
+      <div class="flow-node" style="--d:0s">
+        <div class="flow-icon">🔍</div>
+        <div class="flow-label-top sans">Preflight</div>
+        <div class="flow-cmd">./preflight.sh</div>
+      </div>
+      <div class="flow-arrow" style="--d:0.4s"></div>
+      <div class="flow-node" style="--d:0.8s">
+        <div class="flow-icon">⚡</div>
+        <div class="flow-label-top sans">9 SDD commands</div>
+        <div class="flow-cmd">in Claude Code</div>
+      </div>
+      <div class="flow-arrow" style="--d:1.2s"></div>
+      <div class="flow-node" style="--d:1.6s">
+        <div class="flow-icon">▶</div>
+        <div class="flow-label-top sans">Start app</div>
+        <div class="flow-cmd">./start-demo.sh</div>
+      </div>
+      <div class="flow-arrow" style="--d:2.0s"></div>
+      <div class="flow-node" style="--d:2.4s">
+        <div class="flow-icon">🌐</div>
+        <div class="flow-label-top sans">Walkthrough</div>
+        <div class="flow-cmd">localhost:3000</div>
+      </div>
+      <div class="flow-arrow" style="--d:2.8s"></div>
+      <div class="flow-node" style="--d:3.2s">
+        <div class="flow-icon">⏹</div>
+        <div class="flow-label-top sans">Teardown</div>
+        <div class="flow-cmd">./stop-demo.sh</div>
+      </div>
+    </div>
+    <div class="flow-reset sans"><b>Want to start from scratch ?</b> <code>./reset-demo.sh</code> wipes <code>smartinvoice/</code> for a fresh run</div>
+  </div>
+  <div class="section-eyebrow sans" style="margin-top:40px">Command reference</div>
+  <h2>9 Commands, Full SDD Lifecycle</h2>
+  <p class="section-sub sans">The entire keynote runs on these nine commands. Each one maps to an artifact you can review, diff, and sign off on &mdash; no black boxes.</p>
+  ${cmdsRows}`;
+}
+
+function renderActs(){
+  renderNav();
+  const el=document.getElementById('actsContainer');
+  el.innerHTML=ACTS.map(a=>{
+    const badge=a.type==='slides'?`<span class="act-badge sans" style="background:#e8ede9;color:#5a6a62">SLIDES</span>`:`<span class="act-badge sans" style="background:${a.color}15;color:${a.color}">LIVE IN EDITOR</span>`;
+    const cmdsHtml=a.commands.length?`<div style="margin-bottom:16px"><div class="cmd-label">Commands</div>${a.commands.map(c=>`<div class="cmd-block" onclick="copyText(\`${c.replace(/`/g,'')}\`)"><code>${esc(c)}</code><span class="cmd-copy sans">click to copy</span></div>`).join('')}</div>`:'';
+    const principlesHtml=a.principles?`<div class="principles-grid">${a.principles.map((p,i)=>`<div class="principle"><div class="principle-num">${i+1}</div><div class="principle-txt"><b>${p.t}</b> &mdash; ${p.d}</div></div>`).join('')}</div>`:'';
+    const mongoDocHtml=a.mongoDoc?`<div class="mongo-block"><div class="mongo-label">${a.mongoDoc.title}</div><div class="mongo-code"><pre>${esc(a.mongoDoc.code)}</pre></div><div class="mongo-note"><b>Why this shape:</b> ${a.mongoDoc.why}</div></div>`:'';
+    const envHtml=a.envConfig?`<div class="mongo-block"><div class="mongo-label">${a.envConfig.title}</div><div class="mongo-code"><pre>${esc(a.envConfig.code)}</pre></div><div class="mongo-note"><b>Why externalize:</b> ${a.envConfig.why}</div></div>`:'';
+    const testsHtml=a.tests?`<div class="mongo-block"><div class="mongo-label">${a.tests.title}</div><div class="mongo-code"><pre>${esc(a.tests.code)}</pre></div><div class="mongo-note"><b>Why generated:</b> ${a.tests.why}</div></div>`:'';
+    const aggHtml=a.aggPipeline?`<div class="mongo-block"><div class="mongo-label">${a.aggPipeline.title}</div><div class="mongo-code"><pre>${esc(a.aggPipeline.code)}</pre></div><div class="mongo-note"><b>Why server-side:</b> ${a.aggPipeline.why}</div></div>`:'';
+    const aiHtml=a.aiNotes?`<div class="mongo-block"><div class="mongo-label">AI &amp; MongoDB \u2014 the honest mechanism</div><div class="mongo-note">${a.aiNotes}</div></div>`:'';
+    // const demoHtml=a.demoSteps.length?`<div class="demo-box"><div class="demo-label">Live Demo Actions</div>${a.demoSteps.map((s,si)=>`<div class="demo-step sans"><b>${si+1}.</b>${s}</div>`).join('')}</div>`:'';
+    const demoHtml='';
+    const fallbackHtml=a.fallback?`<div class="fallback sans"><b>Presenter fallback:</b> ${a.fallback}</div>`:'';
+    return`<section class="act" id="act-${a.num}"><div class="act-hdr" onclick="setActive(${a.num})"><div class="act-icon" style="background:${a.color}12;border:2px solid ${a.color}30;color:${a.color}">${a.icon}</div><div><div><span class="act-label" style="color:${a.color}">Act&minus; ${a.num}</span><span class="act-time sans">${a.time}</span>${badge}</div><h3 class="act-title">${a.title}</h3></div></div><div class="act-body"><p class="act-desc sans">${a.description}</p>${cmdsHtml}${principlesHtml}${mongoDocHtml}${envHtml}${demoHtml}${aggHtml}${testsHtml}${aiHtml}${fallbackHtml}<div class="narration"><div class="cmd-label">Narration</div><p>&ldquo;${a.narration}&rdquo;</p></div><div class="deliverable sans"><span style="color:${a.color}">Deliverable \u2192</span><span>${a.deliverable}</span></div></div></section>`;
+  }).join('');
+}
+
+function renderCompare(){
+  const el=document.getElementById('compare');
+  const before=COMPARE_ITEMS.before.map(x=>`<div class="compare-item">${x}</div>`).join('');
+  const after=COMPARE_ITEMS.after.map(x=>`<div class="compare-item">${x}</div>`).join('');
+  el.innerHTML=`<div class="section-eyebrow sans">The honest comparison</div>
+  <h2>Before SDD vs. With SDD</h2>
+  <p class="section-sub sans">Same team, same business idea, same 45 minutes. What actually changes when the spec leads the code?</p>
+  <div class="compare-grid">
+    <div class="compare-col before"><div class="compare-head">Without SDD</div>${before}</div>
+    <div class="compare-col after"><div class="compare-head">With SDD</div>${after}</div>
+  </div>`;
+}
+
+function renderGotchas(){
+  const el=document.getElementById('gotchas');
+  el.innerHTML=`<div class="section-eyebrow sans">Where SDD is not a silver bullet</div>
+  <h2>Tradeoffs we won't hide</h2>
+  <p class="section-sub sans">If a keynote only tells you what works, you're being sold to. Here is where we've seen SDD strain &mdash; and what to do about it.</p>
+  <div class="gotcha-list">${GOTCHAS.map(g=>`<div class="gotcha"><b>${g.t}</b><p>${g.p}</p></div>`).join('')}</div>`;
+}
+
+function renderClosing(){
+  const el=document.getElementById('closingSection');
+  const items=["Specs are contracts, not docs \u2014 written BEFORE code, not after","Iterative prototyping is cheap \u2014 catch mistakes in wireframes, not components","spec-kit automates the lifecycle \u2014 specify, clarify, plan, tasks, implement, validate","Parallel execution is natural \u2014 independent specs = independent agents","MongoDB is the persistence layer \u2014 document model mirrors the spec; aggregation pipelines power insights","Configuration is spec'd, not improvised \u2014 MongoDB URI, database, and collection names live in .env, never in source","Tests are generated, not deferred \u2014 every formula and every endpoint gets a Jest case, \u2265 90% coverage enforced in CI","Validation closes the loop \u2014 code is checked AGAINST specs, always"];
+  el.innerHTML=`<h2>Key Takeaways</h2>${items.map((t,i)=>`<div class="closing-item sans"><b>${i+1}.</b><span>${t}</span></div>`).join('')}`;
+}
+
+function renderCTA(){
+  const el=document.getElementById('cta');
+  const qr=`<svg viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+    <rect width='80' height='80' fill='white'/>
+    <g fill='#0B3D3B'>
+      <rect x='4' y='4' width='18' height='18'/><rect x='8' y='8' width='10' height='10' fill='white'/><rect x='11' y='11' width='4' height='4'/>
+      <rect x='58' y='4' width='18' height='18'/><rect x='62' y='8' width='10' height='10' fill='white'/><rect x='65' y='11' width='4' height='4'/>
+      <rect x='4' y='58' width='18' height='18'/><rect x='8' y='62' width='10' height='10' fill='white'/><rect x='11' y='65' width='4' height='4'/>
+      <rect x='28' y='6' width='4' height='4'/><rect x='36' y='6' width='4' height='4'/><rect x='44' y='6' width='4' height='4'/>
+      <rect x='28' y='14' width='4' height='4'/><rect x='40' y='14' width='4' height='4'/><rect x='48' y='14' width='4' height='4'/>
+      <rect x='6' y='28' width='4' height='4'/><rect x='14' y='28' width='4' height='4'/><rect x='26' y='28' width='4' height='4'/><rect x='34' y='28' width='4' height='4'/><rect x='42' y='28' width='4' height='4'/><rect x='54' y='28' width='4' height='4'/><rect x='62' y='28' width='4' height='4'/><rect x='70' y='28' width='4' height='4'/>
+      <rect x='10' y='36' width='4' height='4'/><rect x='22' y='36' width='4' height='4'/><rect x='30' y='36' width='4' height='4'/><rect x='42' y='36' width='4' height='4'/><rect x='50' y='36' width='4' height='4'/><rect x='58' y='36' width='4' height='4'/><rect x='66' y='36' width='4' height='4'/>
+      <rect x='6' y='44' width='4' height='4'/><rect x='18' y='44' width='4' height='4'/><rect x='26' y='44' width='4' height='4'/><rect x='38' y='44' width='4' height='4'/><rect x='46' y='44' width='4' height='4'/><rect x='54' y='44' width='4' height='4'/><rect x='66' y='44' width='4' height='4'/><rect x='74' y='44' width='4' height='4'/>
+      <rect x='10' y='52' width='4' height='4'/><rect x='22' y='52' width='4' height='4'/><rect x='34' y='52' width='4' height='4'/><rect x='42' y='52' width='4' height='4'/><rect x='54' y='52' width='4' height='4'/><rect x='62' y='52' width='4' height='4'/><rect x='70' y='52' width='4' height='4'/>
+      <rect x='28' y='60' width='4' height='4'/><rect x='40' y='60' width='4' height='4'/><rect x='48' y='60' width='4' height='4'/><rect x='56' y='60' width='4' height='4'/>
+      <rect x='32' y='68' width='4' height='4'/><rect x='44' y='68' width='4' height='4'/><rect x='52' y='68' width='4' height='4'/><rect x='60' y='68' width='4' height='4'/><rect x='68' y='68' width='4' height='4'/>
+    </g>
+  </svg>`;
+  el.innerHTML=`<div class="cta-left">
+    <h3>Take SDD home with you</h3>
+    <p>Clone the keynote repo, read the full spec, and reproduce the build in under an hour on your laptop. If you want to bring Spec-Driven Development into your enterprise MongoDB estate, we would love to talk.</p>
+    <div class="cta-links">
+      <div class="cta-link"><b>spec-kit</b><span>github.com/github/spec-kit</span></div>
+      <div class="cta-link"><b>Keynote repo</b><span>github.com/peerislands/smartinvoice-sdd</span></div>
+      <div class="cta-link"><b>PeerIslands</b><span>peerislands.com &middot; connect@peerislands.com</span></div>
+    </div>
+  </div>
+  <div class="cta-qr">${qr}<small>Scan &middot; keynote repo</small></div>`;
+}
+
+renderPrimer();renderOverview();renderCmds();renderActs();renderCompare();renderGotchas();renderClosing();renderCTA();initScrollSpy();
+</script>
+</body>
+</html>

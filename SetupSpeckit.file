@@ -1,0 +1,32 @@
+PeerIslands · Spec-Driven Development · 45-Minute Live Demo
+============================================================
+
+Pre-flight (5 minutes, run once before the demo)
+------------------------------------------------
+
+  1. Install uv:
+     curl -LsSf https://astral.sh/uv/install.sh | sh
+
+  2. Install spec-kit CLI (pinned to v0.7.0):
+     uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v0.7.0
+
+  3. Scaffold a fresh project wired for Claude Code:
+     specify init smartinvoice --ai claude
+     cd smartinvoice
+     specify check
+
+  4. Launch Claude Code inside the new project:
+     claude
+
+Then open peerislands-speckit-execution-guide.html in your browser
+and start copy-pasting from Act 1 · Constitution.
+
+Replay anytime
+--------------
+
+From this directory:
+  ./reset-demo.sh              # wipes smartinvoice/, prints next steps
+  ./reset-demo.sh --bootstrap  # wipes + re-runs specify init automatically
+
+Prerequisites: Node 20 LTS, Git, and a MongoDB connection
+(local mongodb://localhost:27017 or an Atlas M0 SRV URI).
